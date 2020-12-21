@@ -19,5 +19,5 @@ enum bool enum_board(enum bool start, struct move *move) // enumerates all squar
 
 int find_best_move(struct move *move, int *out_eval, enum color player, int depth)
 {
-   
+    return 0;
 }
