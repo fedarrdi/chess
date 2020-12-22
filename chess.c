@@ -181,32 +181,3 @@ struct piece piece[]=
         };
 
 
-
-int find_best_move(int* out_x, int* out_y, int* out_eval, int player, int depth)
-{
-    int x = -1, y = -1, shuffle = rand(), best_x, best_y, best_eval = -2; // detect not found case
-    while (find_empty(&x, &y, shuffle)) // for every empty field:
-    {
-        board[y][x] = player; // play the move
-        int eval = evaluate_move(x, y); // see what happens
-        if (eval == 0 && depth) // if not conclusive
-            find_best_move(out_x, out_y, &eval, -player, depth - 1); // play opponent move
-        board[y][x] = 0; // remove the move to restore the board for next move
-        eval *= player; // make evaluation relative to player so 1 means win, -1 loss
-        if (best_eval < eval) // maximize best move
-        {
-            best_eval = eval;
-            best_x = x;
-            best_y = y;
-            if (best_eval == 1) // we won already: no need to continue
-                break;
-        }
-    }
-    if (best_eval < -1) // no empty field found?
-        return 0;
-    *out_x = best_x; // write the results
-    *out_y = best_y;
-    *out_eval = best_eval * player; // restore the evaluation to absolute player id
-    return 1;
-}
-
