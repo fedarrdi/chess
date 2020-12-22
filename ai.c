@@ -19,15 +19,32 @@ enum bool enum_board(enum bool start, struct move *move) // enumerates all squar
     return  false;
 }
 
-/// To Do:
-/// fix evaluation system
+void select_move(struct move *best_move, int *best_eval, struct move curr_move, int curr_eval, enum color player)
+{
+    if(player == black)
+    {
+        if(*best_eval > curr_eval)
+        {
+            *best_eval = curr_eval;
+            *best_move = curr_move;
+        }
+    }
+    if(player == white)
+    {
+        if(*best_eval < curr_eval)
+        {
+            *best_eval = curr_eval;
+            *best_move = curr_move;
+        }
+    }
+}
+
+
  int find_best_move(struct move *move, int *out_eval, enum color player, int depth)
 {
     struct move curr_move = {0, 0}, best_move;
     struct undo taken;
     int best_eval = global_evaluation;
-
-    if(!depth) return 0;
 
     while(enum_board(0, &curr_move))
     {
@@ -35,18 +52,16 @@ enum bool enum_board(enum bool start, struct move *move) // enumerates all squar
         {
             piece[board[move->from.y][move->from.x].type].play_move(curr_move, &taken);
 
-            int curr_eval = global_evaluation * (player) ? 1 : -1;
+            int curr_eval = global_evaluation;
 
-            find_best_move(move, out_eval, !player, depth - 1);
+            if(depth) find_best_move(move, out_eval, !player, depth - 1);
 
-            if(best_eval < curr_eval)
-            {
-                best_eval = curr_eval;
-                best_move = curr_move;
-            }
+            select_move(&best_move, &best_eval, curr_move, curr_eval, player);
 
             undo_move(curr_move, taken);
         }
     }
-    return 0;
+    *move = best_move;
+    *out_eval = best_eval;
+    return 1;
 }
