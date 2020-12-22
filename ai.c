@@ -19,7 +19,7 @@ enum bool enum_board(enum bool start, struct move *move) // enumerates all squar
     return  false;
 }
 
-void select_move(struct move *best_move, int *best_eval, struct move curr_move, int curr_eval, enum color player)
+void get_best_move(struct move *best_move, int *best_eval, struct move curr_move, int curr_eval, enum color player)
 {
     if(player == black)
     {
@@ -38,7 +38,22 @@ void select_move(struct move *best_move, int *best_eval, struct move curr_move, 
         }
     }
 }
-
+enum bool checkmate(enum color player)
+{
+    for(int y = 0;y < SIZE;y++)
+    {
+        for(int x = 0;x < SIZE;x++)
+        {
+            if(board[y][x].type == king && board[y][x].color == !player)
+            {
+                struct position pos = {y, x};
+                struct move move = {pos, pos};
+                if(!piece[board[y][x].type].enum_move(&pos, &move)) return true;
+            }
+        }
+    }
+    return false;
+}
 
  int find_best_move(struct move *move, int *out_eval, enum color player, int depth)
 {
@@ -54,13 +69,21 @@ void select_move(struct move *best_move, int *best_eval, struct move curr_move, 
 
             int curr_eval = global_evaluation;
 
+            if(!checkmate(!player))
+            {
+                global_evaluation = ~0;
+                break;
+            }
+
             if(depth) find_best_move(move, out_eval, !player, depth - 1);
 
-            select_move(&best_move, &best_eval, curr_move, curr_eval, player);
+            get_best_move(&best_move, &best_eval, curr_move, curr_eval, player);
 
             undo_move(curr_move, taken);
         }
     }
+    if(global_evaluation == ~0) return 0;
+
     *move = best_move;
     *out_eval = best_eval;
     return 1;
