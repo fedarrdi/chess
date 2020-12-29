@@ -1,5 +1,5 @@
 #include "a.h"
-#include <stdio.h>
+
 extern int global_evaluation;
 
 void undo_move(struct move move, struct undo undo);

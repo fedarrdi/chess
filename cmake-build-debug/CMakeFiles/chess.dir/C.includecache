@@ -8,9 +8,11 @@
 
 C:/Users/ADMIN/CLionProjects/chess/a.h
 
-C:/Users/ADMIN/CLionProjects/chess/ai.c
+C:/Users/ADMIN/CLionProjects/chess/main.c
+stdio.h
+-
 a.h
 C:/Users/ADMIN/CLionProjects/chess/a.h
-stdio.h
+time.h
 -
 

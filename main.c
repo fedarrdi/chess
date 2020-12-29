@@ -115,7 +115,7 @@ void move_piece(int turn)
 int game_over = 0, step = 0;
 int find_best_move(struct move *move, int *out_eval, enum color player, int depth);
 
-int main()
+/*int main()
 {
     struct move move;
     struct undo undo;
@@ -155,9 +155,48 @@ int main()
 
         }
 
-         timeout(2);
+        timeout(2);
 
         step++;
     }
+    return 0;
+}
+*/
+
+void undo_move(struct move move, struct undo undo);
+
+int main()
+{
+
+    for(int y = 0;y < SIZE;y++) {
+     for (int x = 0; x < SIZE; x++) {
+         board[y][x].type = empty;
+     }
+    }
+
+    struct position pos = {1, 1};
+    struct move move = {pos, pos};
+    struct undo taken;
+
+
+    board[0][2].type = pawn;
+    board[0][2].color = black;
+
+    board[pos.y][pos.x].type = king;
+    board[pos.y][pos.x].color = white;
+
+    piece[board[pos.y][pos.x].type].enum_move(&pos, &move);
+    piece[board[pos.y][pos.x].type].enum_move(&pos, &move);
+
+    print_board();
+
+    piece[board[pos.y][pos.x].type].play_move(move, &taken);
+
+    print_board();
+
+    undo_move(move, taken);
+
+    print_board();
+
     return 0;
 }
