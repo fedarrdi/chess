@@ -12,9 +12,9 @@ enum bool pawn_valid_move(struct move move)
     short s = (board[move.from.y][move.from.x].color == black) ? 1 : 6;
 
     return (((move.to.y - move.from.y)*t == 1 && move.to.x == move.from.x && board[move.to.y][move.to.x].type == empty)  ||
-    ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x + 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
-    ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x - 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
-    ((move.to.y - move.from.y)*t == 2 && board[move.to.y][move.to.x].type == empty && move.from.y == s));
+            ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x + 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
+            ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x - 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
+            ((move.to.y - move.from.y)*t == 2 && board[move.to.y][move.to.x].type == empty && move.from.y == s));
 }
 
 enum bool pawn_enum_move(struct position* pos, struct move* move)
@@ -58,19 +58,20 @@ enum bool pawn_enum_move(struct position* pos, struct move* move)
 }
 
 ///-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 weight king_weight(struct position pos) { return 10000000;}
 
 enum bool king_valid_move(struct move move)
 {
     return (mod(move.to.x - move.from.x) < 2 && mod(move.to.y - move.from.y) < 2 && move.to.x >= 0 &&move.to.x < SIZE && move.to.y >= 0 &&
-    move.to.y < SIZE && (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color));
+            move.to.y < SIZE && (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color));
 }
 
-enum bool king_enum_move(struct position* pos, struct move* move)
+enum bool king_enum_move(struct position *pos, struct move* move)
 {
     struct position d = {pos->x - move->to.x, pos->y - move->to.y};
 
-    move->to.x = pos->y;
+    move->to.x = pos->x;
     move->to.y = pos->y - 1;
     if (!d.y && !d.x)
     {
@@ -101,6 +102,7 @@ enum bool king_enum_move(struct position* pos, struct move* move)
         if (king_valid_move(*move)) return true;
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
     }
+
 
     move->to.x = pos->x ;
     move->to.y = pos->y + 1;
@@ -179,5 +181,3 @@ struct piece piece[]=
                 { pawn_weight, pawn_valid_move, generic_play_move, pawn_enum_move },
                 { king_weight, king_valid_move, generic_play_move, king_enum_move }
         };
-
-

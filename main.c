@@ -1,6 +1,16 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include "a.h"
+#include <time.h>
+
+int timeout ( int seconds )
+{
+    clock_t endwait;
+    endwait = clock () + seconds * CLOCKS_PER_SEC ;
+    while (clock() < endwait) {}
+
+    return  1;
+}
 
 
 char getPiece(struct square p)
@@ -18,16 +28,15 @@ void fill_board()
         for(int x = 0;x < SIZE;x++)
             board[y][x].type = empty;
 
-
     for(int x = 0;x < SIZE;x++)
     {
         board[0][x].type = board[7][x].type = king;
         board[0][x].color = black;
         board[7][x].color = white;
 
-        //board[1][x].type = board[6][x].type = pawn;
-       // board[1][x].color = black;
-        //board[6][x].color = white;
+        board[1][x].type = board[6][x].type = pawn;
+        board[1][x].color = black;
+        board[6][x].color = white;
     }
 
 }
@@ -65,7 +74,7 @@ void print_board()
 
 void move_piece(int turn)
 {
-    enum color color = (turn) ? black : white;
+    enum color color = !turn;
     struct position from, to;
 
     back:;
@@ -104,14 +113,43 @@ void move_piece(int turn)
 }
 
 int game_over = 0, step = 0;
+int find_best_move(struct move *move, int *out_eval, enum color player, int depth);
 
 int main()
 {
+    struct move move;
+    struct undo undo;
+    int eval = 0, depth = 2;
+
     fill_board();
-    while(!game_over)
-    {
+    while(!game_over) {
         print_board();
-        move_piece(step%2);
+        if (step % 2)
+        {
+            printf("Black\n");
+
+            if (!find_best_move(&move, &eval, black, depth))
+                printf("Game Over!!!\n");
+
+            piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
+
+            printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
+        }
+        else
+        {
+            printf("White\n");
+
+            if(!find_best_move(&move, &eval, white, depth))
+                printf("Game Over!!!\n");
+
+            piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
+
+            printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
+
+        }
+
+        if( timeout(2) == 1 );
+
         step++;
     }
     return 0;
