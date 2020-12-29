@@ -32,7 +32,7 @@ enum bool pawn_enum_move(struct position* pos, struct move* move)
 
     move->to.y = pos->y + f;
     move->to.x = pos->x;
-    if(d.y == 2 && !d.x)
+    if(d.y == -2*f && !d.x)
     {
         if (pawn_valid_move(*move)) return true;
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
@@ -40,7 +40,7 @@ enum bool pawn_enum_move(struct position* pos, struct move* move)
 
     move->to.y = pos->y + f;
     move->to.x = pos->x + 1;
-    if(d.y == f && !d.x)
+    if(d.y == -f && !d.x)
     {
         if (pawn_valid_move(*move)) return true;
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
@@ -48,7 +48,7 @@ enum bool pawn_enum_move(struct position* pos, struct move* move)
 
     move->to.y = pos->y + f;
     move->to.x = pos->x - 1;
-    if(d.y == f && d.x == -1)
+    if(d.y == -f && d.x == -1)
     {
         if (pawn_valid_move(*move)) return true;
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;

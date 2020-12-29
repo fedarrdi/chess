@@ -123,32 +123,39 @@ int main()
 
     fill_board();
     while(!game_over) {
+
         print_board();
-        if (step % 2)
-        {
+
+        if (step % 2) {
             printf("Black\n");
 
             if (!find_best_move(&move, &eval, black, depth))
+            {
                 printf("Game Over!!!\n");
+                break;
+            }
 
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
 
             printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
         }
+
         else
         {
             printf("White\n");
 
             if(!find_best_move(&move, &eval, white, depth))
+            {
                 printf("Game Over!!!\n");
-
+                break;
+            }
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
 
             printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
 
         }
 
-        if( timeout(2) == 1 );
+         timeout(2);
 
         step++;
     }
