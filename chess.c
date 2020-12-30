@@ -151,7 +151,7 @@ void empty_play_move(struct move move, struct undo *taken){  }
 
 void undo_move(struct move move, struct undo undo)
 {
-    struct square *from = &board[move.from.y][move.from.x], *to = &board[move.to.y][move.to.x], *taken = &board[undo.position.y][undo.position.y];
+    struct square *from = &board[move.from.y][move.from.x], *to = &board[move.to.y][move.to.x], *taken = &board[undo.position.y][undo.position.x];
     if (to->color == white)
         global_evaluation -= piece[to->type].weight(move.to);
     else

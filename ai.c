@@ -1,12 +1,12 @@
 #include "a.h"
-
+#include<stdio.h>
 extern int global_evaluation;
-
-void undo_move(struct move move, struct undo undo);
 
 void print_board();
 
 int timeout ( int seconds );
+
+void undo_move(struct move move, struct undo undo);
 
 enum bool enum_board(enum color player, struct move *move)
 {
@@ -29,7 +29,7 @@ enum bool enum_board(enum color player, struct move *move)
 
 enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth)
 {
-    struct move curr_move = {{0, 0}, {0, 0}}, best_move = {{0, 0}, {-1, 0}};
+    struct move curr_move = {{0, 0}, {-1, 0}}, best_move = {{0, 0}, {-1, 0}};
     struct undo taken;
     int best_eval = global_evaluation;
 
