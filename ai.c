@@ -24,10 +24,11 @@ enum bool enum_board(enum color player, struct move *move)
         }
     move->from.x = 0;
     }
+    move->to.x = 0;
     return false;
 }
 
-enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth)
+enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta)
 {
     struct move curr_move = {{0, 0}, {-1, 0}}, best_move = {{0, 0}, {-1, 0}};
     struct undo taken;
@@ -39,20 +40,26 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
 
         int curr_eval = global_evaluation;
 
-        if(depth) find_best_move(move, out_eval, !player, depth - 1);
+        if(depth) find_best_move(move, &curr_eval, !player, depth - 1, alpha, beta);
 
-        if((!player && best_eval <= curr_eval) || (player && best_eval >= curr_eval))
+        if(curr_eval < -1e6 || curr_eval > 1e6) return false;
+
+        if((!player && best_eval >= curr_eval) || (player && best_eval <= curr_eval))
         {
+            (player) ? (alpha = curr_eval) : (beta = curr_eval);
             best_eval = curr_eval;
             best_move = curr_move;
         }
 
+        if(beta <= alpha) break;
+
         undo_move(curr_move, taken);
     }
-    if(best_move.to.x == -1) return false;
+    if(curr_move.to.x == -1) return false;
+
+    if(best_move.to.x == -1) best_move = curr_move;
 
     *move = best_move;
     *out_eval = best_eval;
-
     return true;
 }

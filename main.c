@@ -30,15 +30,14 @@ void fill_board()
 
     for(int x = 0;x < SIZE;x++)
     {
-        board[0][x].type = board[7][x].type = king;
-        board[0][x].color = black;
-        board[7][x].color = white;
-
         board[1][x].type = board[6][x].type = pawn;
         board[1][x].color = black;
         board[6][x].color = white;
     }
 
+    board[0][3].type = board[0][4].type = board[7][3].type = board[7][4].type = king;
+    board[0][3].color = board[0][4].color = black;
+    board[7][3].color = board[7][4].color = white;
 }
 
 void print_board()
@@ -112,8 +111,8 @@ void move_piece(int turn)
     board[from.y][from.x].type = empty;
 }
 
-int game_over = 0, step = 0;
-int find_best_move(struct move *move, int *out_eval, enum color player, int depth);
+int game_over = 0, step = 0, alpha = (int)-1e8, beta = (int)1e8;
+int find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
 
 int main()
 {
@@ -129,7 +128,7 @@ int main()
         if (step % 2) {
             printf("Black\n");
 
-            if (!find_best_move(&move, &eval, black, depth))
+            if (!find_best_move(&move, &eval, black, depth, alpha, beta))
             {
                 printf("Game Over!!!\n");
                 break;
@@ -137,21 +136,19 @@ int main()
 
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
 
-            printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
         }
 
         else
         {
             printf("White\n");
 
-            if(!find_best_move(&move, &eval, white, depth))
+            if(!find_best_move(&move, &eval, white, depth, alpha, beta))
             {
                 printf("Game Over!!!\n");
                 break;
             }
-            piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
 
-            printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
+            piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
 
         }
 
