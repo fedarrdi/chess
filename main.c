@@ -19,6 +19,8 @@ char getPiece(struct square p)
     if (p.type == pawn) return 'P';
     if (p.type == king && p.color == white) return 'k';
     if (p.type == king) return 'K';
+    if (p.type == knight && p.color == white) return 'h';
+    if (p.type == knight) return 'H';
     return ' ';
 }
 
@@ -38,6 +40,11 @@ void fill_board()
     board[0][3].type = board[0][4].type = board[7][3].type = board[7][4].type = king;
     board[0][3].color = board[0][4].color = black;
     board[7][3].color = board[7][4].color = white;
+
+    board[0][2].type = board[0][5].type = board[7][2].type = board[7][5].type = knight;
+    board[0][2].color = board[0][5].color = black;
+    board[7][2].color = board[7][5].color = white;
+
 }
 
 void print_board()
@@ -86,6 +93,7 @@ void move_piece(int turn)
         printf("Wrong cords\n");
         goto back;
     }
+
     struct move move = {from, from};
     if(!piece[board[from.y][from.x].type].enum_move(&from, &move))
     {
@@ -118,42 +126,35 @@ int main()
 {
     struct move move;
     struct undo undo;
-    int eval = 0, depth = 1;
+    int eval = 0, depth = 0;
 
     fill_board();
-    while(!game_over) {
-
+    while(!game_over)
+    {
         print_board();
-
-        if (step % 2) {
+        if (step % 2)
+        {
             printf("Black\n");
-
             if (!find_best_move(&move, &eval, black, depth, alpha, beta))
             {
                 printf("Game Over!!!\n");
                 break;
             }
-
+            printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
-
         }
-
         else
         {
             printf("White\n");
-
             if(!find_best_move(&move, &eval, white, depth, alpha, beta))
             {
                 printf("Game Over!!!\n");
                 break;
             }
-
+            printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
-
         }
-
         timeout(2);
-
         step++;
     }
     return 0;

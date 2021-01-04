@@ -50,10 +50,10 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
             best_eval = curr_eval;
             best_move = curr_move;
         }
-
         if(beta <= alpha) break;
 
         undo_move(curr_move, taken);
+
     }
     if(curr_move.to.x == -1) return false;
 
