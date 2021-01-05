@@ -21,6 +21,8 @@ char getPiece(struct square p)
     if (p.type == king) return 'K';
     if (p.type == knight && p.color == white) return 'h';
     if (p.type == knight) return 'H';
+    if (p.type == queen && p.color == white) return 'q';
+    if (p.type == queen) return 'Q';
     return ' ';
 }
 
@@ -120,13 +122,13 @@ void move_piece(int turn)
 }
 
 int game_over = 0, step = 0, alpha = (int)-1e8, beta = (int)1e8;
-int find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
+enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
 
 int main()
 {
     struct move move;
     struct undo undo;
-    int eval = 0, depth = 0;
+    int eval = 0, depth = 1;
 
     fill_board();
     while(!game_over)
@@ -142,6 +144,7 @@ int main()
             }
             printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
+
         }
         else
         {
