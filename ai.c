@@ -39,6 +39,9 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
 
     while(enum_board(player, &curr_move))
     {
+        if(curr_move.from.y == 7 && curr_move.from.x == 7)
+            printf("");
+
         piece[board[curr_move.from.y][curr_move.from.x].type].play_move(curr_move, &taken);
 
         int curr_eval = global_evaluation;
@@ -53,16 +56,16 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
             best_eval = curr_eval;
             best_move = curr_move;
         }
-        //printf("%d, %d, %d, %d\n", curr_move.from.x, curr_move.from.y, curr_move.to.x, curr_move.to.y);
+        printf("%d, %d, %d, %d\n", curr_move.from.x, curr_move.from.y, curr_move.to.x, curr_move.to.y);
         //print_board();
         //timeout(1);
+        printf("curr_eval = %d\n", curr_eval);
         undo_move(curr_move, taken);
+        printf("old_eval = %d\n", curr_eval);
 
         if(beta <= alpha) break;
     }
     if(curr_move.to.x == -1) return false;
-
-    //if(best_move.to.x && curr_move.to.y == 8)
 
     *move = best_move;
     *out_eval = best_eval;

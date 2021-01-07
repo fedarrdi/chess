@@ -52,9 +52,9 @@ void fill_board()
     board[0][2].color = board[0][5].color = black;
     board[7][2].color = board[7][5].color = white;
 
-    /*board[0][1].type = board[0][6].type = board[7][1].type = board[7][6].type = knight;
+    board[0][1].type = board[0][6].type = board[7][1].type = board[7][6].type = knight;
     board[0][1].color = board[0][6].color = black;
-    board[7][1].color = board[7][6].color = white;*/
+    board[7][1].color = board[7][6].color = white;
 
     board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
     board[0][0].color = board[0][7].color = black;
@@ -141,7 +141,7 @@ int main()
 {
     struct move move;
     struct undo undo;
-    int eval = 0, depth = 1;
+    int eval = 0, depth = 0;
 
     fill_board();
     while(!game_over)
