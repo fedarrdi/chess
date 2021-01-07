@@ -1,5 +1,5 @@
 #define SIZE 8
-enum type { empty, pawn, knight,/*bishop, rook*/ queen, king };
+enum type { empty, pawn, knight, bishop, rook, queen, king };
 enum color { black, white };
 
 struct square
@@ -34,4 +34,4 @@ struct piece
     enum bool (*valid_move)(struct move move);
     void(*play_move)(struct move move, struct undo *taken);
     enum bool (*enum_move)(struct position *pos, struct move *move); // pos!=0 for the first move
-} piece[5];
+} piece[7];

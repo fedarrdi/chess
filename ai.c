@@ -1,9 +1,14 @@
 #include "a.h"
-#include <time.h>
+#include <stdio.h>
 
 extern int global_evaluation;
 
 void undo_move(struct move move, struct undo undo);
+
+void print_board();
+
+int timeout ( int seconds );
+
 
 enum bool enum_board(enum color player, struct move *move)
 {
@@ -48,7 +53,7 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
             best_eval = curr_eval;
             best_move = curr_move;
         }
-
+        //print_board();
         undo_move(curr_move, taken);
 
         if(beta <= alpha) break;

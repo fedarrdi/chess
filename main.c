@@ -23,6 +23,10 @@ char getPiece(struct square p)
     if (p.type == knight) return 'H';
     if (p.type == queen && p.color == white) return 'q';
     if (p.type == queen) return 'Q';
+    if (p.type == bishop && p.color == white) return 'b';
+    if (p.type == bishop) return 'B';
+    if (p.type == rook && p.color == white) return 'r';
+    if (p.type == rook) return 'R';
     return ' ';
 }
 
@@ -32,20 +36,29 @@ void fill_board()
         for(int x = 0;x < SIZE;x++)
             board[y][x].type = empty;
 
-    for(int x = 0;x < SIZE;x++)
-    {
-        board[1][x].type = board[6][x].type = pawn;
-        board[1][x].color = black;
-        board[6][x].color = white;
-    }
+    /*for(int x = 0;x < SIZE;x++)
+        board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
 
-    board[0][3].type = board[0][4].type = board[7][3].type = board[7][4].type = king;
-    board[0][3].color = board[0][4].color = black;
-    board[7][3].color = board[7][4].color = white;
 
-    board[0][2].type = board[0][5].type = board[7][2].type = board[7][5].type = knight;
+    board[0][3].type =  board[7][3].type =  queen;
+    board[0][3].color = black;
+    board[7][3].color = white;
+
+    board[0][4].type =  board[7][4].type =  king;
+    board[0][4].color = black;
+    board[7][4].color = white;*/
+
+    board[0][2].type = board[0][5].type = board[7][2].type = board[7][5].type = bishop;
     board[0][2].color = board[0][5].color = black;
     board[7][2].color = board[7][5].color = white;
+
+    /*board[0][1].type = board[0][6].type = board[7][1].type = board[7][6].type = knight;
+    board[0][1].color = board[0][6].color = black;
+    board[7][1].color = board[7][6].color = white;
+
+    board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
+    board[0][0].color = board[0][7].color = black;
+    board[7][0].color = board[7][7].color = white;*/
 
 }
 
@@ -144,19 +157,19 @@ int main()
             }
             printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
-
         }
         else
         {
             printf("White\n");
-            if(!find_best_move(&move, &eval, white, depth, alpha, beta))
-            {
+            if (!find_best_move(&move, &eval, white, depth, alpha, beta)) {
                 printf("Game Over!!!\n");
                 break;
             }
             printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
+
         }
+
         timeout(2);
         step++;
     }
