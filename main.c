@@ -36,7 +36,7 @@ void fill_board()
         for(int x = 0;x < SIZE;x++)
             board[y][x].type = empty;
 
-    /*for(int x = 0;x < SIZE;x++)
+    for(int x = 0;x < SIZE;x++)
         board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
 
 
@@ -46,7 +46,7 @@ void fill_board()
 
     board[0][4].type =  board[7][4].type =  king;
     board[0][4].color = black;
-    board[7][4].color = white;*/
+    board[7][4].color = white;
 
     board[0][2].type = board[0][5].type = board[7][2].type = board[7][5].type = bishop;
     board[0][2].color = board[0][5].color = black;
@@ -54,11 +54,11 @@ void fill_board()
 
     /*board[0][1].type = board[0][6].type = board[7][1].type = board[7][6].type = knight;
     board[0][1].color = board[0][6].color = black;
-    board[7][1].color = board[7][6].color = white;
+    board[7][1].color = board[7][6].color = white;*/
 
     board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
     board[0][0].color = board[0][7].color = black;
-    board[7][0].color = board[7][7].color = white;*/
+    board[7][0].color = board[7][7].color = white;
 
 }
 

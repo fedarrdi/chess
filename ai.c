@@ -53,12 +53,16 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
             best_eval = curr_eval;
             best_move = curr_move;
         }
+        //printf("%d, %d, %d, %d\n", curr_move.from.x, curr_move.from.y, curr_move.to.x, curr_move.to.y);
         //print_board();
+        //timeout(1);
         undo_move(curr_move, taken);
 
         if(beta <= alpha) break;
     }
     if(curr_move.to.x == -1) return false;
+
+    //if(best_move.to.x && curr_move.to.y == 8)
 
     *move = best_move;
     *out_eval = best_eval;

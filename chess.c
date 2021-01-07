@@ -9,7 +9,8 @@ weight rook_weight(struct position pos) { return 300; }
 enum bool rook_valid_move(struct move move)
 {
     return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
-            (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color));
+            (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) &&
+            (move.to.x == move.from.x || move.to.y == move.from.y));
 }
 
 enum bool rook_enum_move(struct position *pos, struct move *move)
@@ -91,7 +92,8 @@ weight bishop_wight(struct position pos) { return 200; }
 enum bool bishop_valid_move(struct move move)
 {
     return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
-            (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color));
+    (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)
+    && move.to.x != move.from.x && move.to.y != move.from.y && mod(move.to.x - move.from.x) == mod(move.to.y - move.from.y));
 }
 
 enum bool bishop_enum_move(struct position *pos, struct move *move)
@@ -174,8 +176,8 @@ weight queen_weight(struct position pos){ return 100 + board[pos.y][pos.x].color
 
 enum bool queen_valid_move(struct move move)
 {
-    return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
-    (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color));
+    return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE && (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)
+    && ((move.to.x == move.from.x || move.to.y == move.from.y) || (move.to.x != move.from.x && move.to.y != move.from.y && mod(move.to.x - move.from.x) == mod(move.to.y - move.from.y))));
 }
 
 enum bool queen_enum_move(struct position *pos, struct move *move)
