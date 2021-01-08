@@ -175,3 +175,28 @@ int main()
     }
     return 0;
 }
+
+/*void undo_move(struct move move, struct undo undo);
+
+int main()
+{
+    for(int y = 0;y < SIZE;y++)
+        for(int x = 0;x < SIZE;x++)
+            board[y][x].type = empty;
+
+    struct position pos = {3, 3};
+    struct move move = {pos, pos};
+    struct undo undo;
+
+    board[pos.y][pos.x].type = queen;
+    board[pos.y][pos.x].color = white;
+
+    while(piece[board[pos.y][pos.x].type].enum_move(&pos, &move))
+    {
+        piece[board[pos.y][pos.x].type].play_move(move, &undo);
+        print_board();
+        undo_move(move, undo);
+    }
+
+    return 0;
+}*/
