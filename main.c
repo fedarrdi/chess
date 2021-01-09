@@ -8,7 +8,6 @@ int timeout ( int seconds )
     clock_t endwait;
     endwait = clock () + seconds * CLOCKS_PER_SEC ;
     while (clock() < endwait) {}
-
     return  1;
 }
 
@@ -35,6 +34,46 @@ void fill_board()
     for(int y = 0;y < SIZE;y++)
         for(int x = 0;x < SIZE;x++)
             board[y][x].type = empty;
+
+
+ /*       board[0][0].type = rook;
+        board[0][0].color = black;
+        board[1][2].type = pawn;
+        board[1][2].color = black;
+        board[1][5].type = pawn;
+        board[1][5].color = black;
+        board[1][6].type = king;
+        board[1][6].color = black;
+        board[2][0].type = pawn;
+        board[2][0].color = black;
+        board[2][6].type = pawn;
+        board[2][6].color = black;
+        board[3][1].type = pawn;
+        board[3][1].color = black;
+        board[3][3].type = queen;
+        board[3][3].color = white;
+        board[3][6].type = king;
+        board[3][6].color = white;
+        board[3][7].type = pawn;
+        board[3][7].color = black;
+        board[4][1].type = pawn;
+        board[4][1].color = white;
+        board[5][2].type =pawn;
+        board[5][2].color = white;
+        board[5][4].type = knight;
+        board[5][4].color = white;
+        board[5][7].type = pawn;
+        board[5][7].color = white;
+        board[6][1].type = pawn;
+        board[6][1].color = white;
+        board[6][4].type = knight;
+        board[6][4].color = black;
+        board[6][6].type = pawn;
+        board[6][6].color = white;
+        board[7][0].type = rook;
+        board[7][0].color = white;
+        board[7][6].type = bishop;
+        board[7][6].color = black;*/
 
     for(int x = 0;x < SIZE;x++)
         board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
@@ -134,19 +173,19 @@ void move_piece(int turn)
     board[from.y][from.x].type = empty;
 }
 
-int game_over = 0, step = 0, alpha = (int)-1e8, beta = (int)1e8;
 enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
 
 int main()
 {
     struct move move;
     struct undo undo;
-    int eval = 0, depth = 5;
+    int eval = 0, depth = 4, game_over = 0, step = 0, alpha = (int)-1e8, beta = (int)1e8;
+
     fill_board();
     while(!game_over)
     {
         print_board();
-        if (step % 2)
+        if (step % 2 == 0)
         {
             printf("Black\n");
             if (!find_best_move(&move, &eval, black, depth, alpha, beta))
@@ -160,10 +199,12 @@ int main()
         else
         {
             printf("White\n");
-            if (!find_best_move(&move, &eval, white, depth, alpha, beta)) {
+            if (!find_best_move(&move, &eval, white, depth, alpha, beta))
+            {
                 printf("Game Over!!!\n");
                 break;
             }
+
             printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
 
