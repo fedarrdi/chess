@@ -196,21 +196,32 @@ int main() {
 
         print_board();
         if (step % 2 == turn)
-        {
             move_piece(turn);
-        }
+
         else
         {
-            if (!find_best_move(&move, &eval, turn, depth, alpha, beta))
+            if(!find_best_move(&move, &eval, turn, depth, alpha, beta))
             {
-                printf("Game Over!!!\n");
+                printf("REMI!!!");
+                break;
+            }
+
+            if(global_evaluation >= 1e6)
+            {
+                printf("White is victorious!!!");
+                break;
+            }
+
+            if(global_evaluation <= 1e6)
+            {
+                printf("Black is victorious!!");
                 break;
             }
 
             printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
-
         }
+
         timeout(2);
         system("cls");
         step++;
