@@ -3,7 +3,7 @@ int mod(int a){return (a < 0) ? -a : a;}
 extern int global_evaluation = 0;
 
 ///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-weight knight_weight(struct position pos) { return 250; }
+weight knight_weight(struct position pos) { return 300; }
 
 enum bool knight_valid_move(struct move move)
 {
@@ -84,7 +84,7 @@ enum bool knight_enum_move(struct position* pos, struct move* move)
 
 ///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-weight rook_weight(struct position pos) { return 300; }
+weight rook_weight(struct position pos) { return 400; }
 
 enum bool rook_valid_move(struct move move)
 {
@@ -137,7 +137,7 @@ enum bool rook_enum_move(struct position *pos, struct move *move)
 }
 
 ///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-weight bishop_wight(struct position pos) { return 250; }
+weight bishop_wight(struct position pos) { return 300; }
 
 enum bool bishop_valid_move(struct move move)
 {
@@ -446,7 +446,7 @@ int attacked_defend(struct position pos)
                     if(board[y][x].color == board[pos.y][pos.x].color)
                         defends++;
                     else
-                        attacks++;
+                        attacks+=2;
                 }
         }
     }

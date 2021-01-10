@@ -69,8 +69,8 @@ void print_board()
 {
     printf("Coordinates are being entered with first X, and then Y!\n\n");
     printf("  X");
-    for (int x = 65; x < 73; x++)
-        printf("   %c", x);
+    for (int x = 0; x < 8; x++)
+        printf("   %d", x);
 
     printf("\n");
     for (int y = 0; y < SIZE; y++)
@@ -139,14 +139,32 @@ void move_piece(int turn)
     board[from.y][from.x].type = empty;
 }
 
+int extend_depth()
+{
+    int figures = 0;
+    for(int y = 0;y < SIZE;y++)
+        for(int x = 0;x < SIZE;x++)
+            if(board[y][x].type != empty)
+                figures++;
+
+    if(figures < 10) return 4;
+    if(figures < 15) return 3;
+    if(figures < 20) return 2;
+    if(figures < 25) return 1;
+    return 0;
+}
+
+
 enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
 
-int main() {
+int main()
+{
     struct move move;
     struct undo undo;
     int eval = 0, depth, step = 0, alpha = (int) -1e8, beta = (int) 1e8, turn;
 
-    printf("                CHESS               \n\n");
+    system("cls");
+    printf("                                                      CHESS               \n\n");
     printf("Information:\n");
     printf("Whites are playing with UPPERCASE letters, and Blacks are playing with lowercase letters.\n\n");
     printf("List of figures are:\n");
@@ -164,7 +182,7 @@ int main() {
     printf("0 - New to Chess\n");
     printf("1 - Beginner\n");
     printf("3 - Intermediate\n");
-    printf("5 - Grandmaster / Advanced\n\n\n");
+    printf("4 - Grandmaster / Advanced\n\n\n");
     Enter:
     printf("Enter: ");
 
@@ -178,21 +196,35 @@ int main() {
 
     system("cls");
 
-
     printf("Please choose piece color\n");
     printf("1 - Black\n");
     printf("0 - White\n");
 
     scanf("%d", &turn);
 
-
     fill_board();
     while(1)
     {
+        depth += extend_depth();
+
         if(step % 2 == 1)
+        {
+            if(global_evaluation >= 1e6)
+            {
+                printf("Black wins!\n");
+                break;
+            }
             printf("Black\n");
+        }
         else
+        {
+            if(global_evaluation <= -1e6)
+            {
+                printf("Black wins!\n");
+                break;
+            }
             printf("White\n");
+        }
 
         print_board();
         if (step % 2 == turn)
@@ -200,25 +232,7 @@ int main() {
 
         else
         {
-            if(!find_best_move(&move, &eval, turn, depth, alpha, beta))
-            {
-                printf("REMI!!!");
-                break;
-            }
-
-            if(global_evaluation >= 1e6)
-            {
-                printf("White is victorious!!!");
-                break;
-            }
-
-            if(global_evaluation <= 1e6)
-            {
-                printf("Black is victorious!!");
-                break;
-            }
-
-            printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
+            find_best_move(&move, &eval, turn, depth, alpha, beta);
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
         }
 

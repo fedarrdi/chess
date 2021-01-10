@@ -51,8 +51,6 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
             best_move = curr_move;
         }
 
-        //if(curr_eval < -1e6 || curr_eval > 1e6) break;
-
         undo_move(curr_move, taken);
 
         if(beta <= alpha) break;
