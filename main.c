@@ -2,15 +2,19 @@
 #include<stdio.h>
 #include "a.h"
 #include <time.h>
+#include <conio.h>
+#include <stdlib.h>
+
+extern int global_evaluation;
 
 int timeout ( int seconds )
 {
     clock_t endwait;
     endwait = clock () + seconds * CLOCKS_PER_SEC ;
     while (clock() < endwait) {}
+
     return  1;
 }
-
 
 char getPiece(struct square p)
 {
@@ -34,46 +38,6 @@ void fill_board()
     for(int y = 0;y < SIZE;y++)
         for(int x = 0;x < SIZE;x++)
             board[y][x].type = empty;
-
-
- /*       board[0][0].type = rook;
-        board[0][0].color = black;
-        board[1][2].type = pawn;
-        board[1][2].color = black;
-        board[1][5].type = pawn;
-        board[1][5].color = black;
-        board[1][6].type = king;
-        board[1][6].color = black;
-        board[2][0].type = pawn;
-        board[2][0].color = black;
-        board[2][6].type = pawn;
-        board[2][6].color = black;
-        board[3][1].type = pawn;
-        board[3][1].color = black;
-        board[3][3].type = queen;
-        board[3][3].color = white;
-        board[3][6].type = king;
-        board[3][6].color = white;
-        board[3][7].type = pawn;
-        board[3][7].color = black;
-        board[4][1].type = pawn;
-        board[4][1].color = white;
-        board[5][2].type =pawn;
-        board[5][2].color = white;
-        board[5][4].type = knight;
-        board[5][4].color = white;
-        board[5][7].type = pawn;
-        board[5][7].color = white;
-        board[6][1].type = pawn;
-        board[6][1].color = white;
-        board[6][4].type = knight;
-        board[6][4].color = black;
-        board[6][6].type = pawn;
-        board[6][6].color = white;
-        board[7][0].type = rook;
-        board[7][0].color = white;
-        board[7][6].type = bishop;
-        board[7][6].color = black;*/
 
     for(int x = 0;x < SIZE;x++)
         board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
@@ -103,9 +67,10 @@ void fill_board()
 
 void print_board()
 {
-    printf("   ");
-    for (int x = 0; x < SIZE; x++)
-        printf("   %d", x);
+    printf("Coordinates are being entered with first X, and then Y!\n\n");
+    printf("  X");
+    for (int x = 65; x < 73; x++)
+        printf("   %c", x);
 
     printf("\n");
     for (int y = 0; y < SIZE; y++)
@@ -129,6 +94,7 @@ void print_board()
         }
         printf("\n");
     }
+    printf("  Y  ");
     printf("\n"); printf("\n");
 }
 
@@ -138,25 +104,25 @@ void move_piece(int turn)
     struct position from, to;
 
     back:;
-    printf("Enter cords of the piece you want to move\n");
+    printf("Enter cords of the piece you want to move:\n");
     scanf("%d", &from.x);
     scanf("%d", &from.y);
 
     if (board[from.y][from.x].type == empty || board[from.y][from.x].color != color)
     {
-        printf("Wrong cords\n");
+        printf("Wrong cords!\n");
         goto back;
     }
 
     struct move move = {from, from};
     if(!piece[board[from.y][from.x].type].enum_move(&from, &move))
     {
-        printf("This piece has no possible moves\n");
+        printf("This piece has no possible moves!\n");
         goto back;
     }
 
     back1:;
-    printf("Enter were you want to move the piece\n");
+    printf("Enter where you want to move the piece:\n");
     scanf("%d", &to.x);
     scanf("%d", &to.y);
 
@@ -164,7 +130,7 @@ void move_piece(int turn)
     move.to = to;
     if(!piece[board[from.y][from.x].type].valid_move(move))
     {
-        printf("This move is not valid\n");
+        printf("This move is not valid!\n");
         goto back1;
     }
 
@@ -175,31 +141,67 @@ void move_piece(int turn)
 
 enum bool find_best_move(struct move *move, int *out_eval, enum color player, int depth, int alpha, int beta);
 
-int main()
-{
+int main() {
     struct move move;
     struct undo undo;
-    int eval = 0, depth = 4, game_over = 0, step = 0, alpha = (int)-1e8, beta = (int)1e8;
+    int eval = 0, depth, step = 0, alpha = (int) -1e8, beta = (int) 1e8, turn;
+
+    printf("                CHESS               \n\n");
+    printf("Information:\n");
+    printf("Whites are playing with UPPERCASE letters, and Blacks are playing with lowercase letters.\n\n");
+    printf("List of figures are:\n");
+    printf("K - King\n");
+    printf("Q - Queen\n");
+    printf("B - Bishop\n");
+    printf("H - Knight\n");
+    printf("R - Rook\n");
+    printf("P - Pawn\n\n\n");
+    printf("Press Any Key To Continue...");
+    getch();
+    system("cls");
+
+    printf("Please choose your level:\n");
+    printf("0 - New to Chess\n");
+    printf("1 - Beginner\n");
+    printf("3 - Intermediate\n");
+    printf("5 - Grandmaster / Advanced\n\n\n");
+    Enter:
+    printf("Enter: ");
+
+    scanf("%d", &depth);
+
+    if (depth < 0 || depth > 5)
+    {
+        printf("\nInvalid choice, please choose again!\n\n\n");
+        goto Enter;
+    }
+
+    system("cls");
+
+
+    printf("Please choose piece color\n");
+    printf("1 - Black\n");
+    printf("0 - White\n");
+
+    scanf("%d", &turn);
+
 
     fill_board();
-    while(!game_over)
+    while(1)
     {
-        print_board();
-        if (step % 2 == 0)
-        {
+        if(step % 2 == 1)
             printf("Black\n");
-            if (!find_best_move(&move, &eval, black, depth, alpha, beta))
-            {
-                printf("Game Over!!!\n");
-                break;
-            }
-            printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
-            piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
+        else
+            printf("White\n");
+
+        print_board();
+        if (step % 2 == turn)
+        {
+            move_piece(turn);
         }
         else
         {
-            printf("White\n");
-            if (!find_best_move(&move, &eval, white, depth, alpha, beta))
+            if (!find_best_move(&move, &eval, turn, depth, alpha, beta))
             {
                 printf("Game Over!!!\n");
                 break;
@@ -209,9 +211,10 @@ int main()
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
 
         }
-
         timeout(2);
+        system("cls");
         step++;
     }
+
     return 0;
 }
