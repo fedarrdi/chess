@@ -195,16 +195,35 @@ int main()
     }
 
     system("cls");
-
+    turn1:;
     printf("Please choose piece color\n");
     printf("1 - Black\n");
     printf("0 - White\n");
 
     scanf("%d", &turn);
 
+    if (turn != 0 && turn != 1)
+    {
+        printf("Invalid color, please choose again!\n");
+        goto turn1;
+    }
+
+
     fill_board();
     while(1)
     {
+        if(global_evaluation >= 1e6)
+        {
+            printf("White wins!!!\n");
+            break;
+        }
+
+        if(global_evaluation <= -1e6)
+        {
+            printf("Black wins!!!\n");
+            break;
+        }
+
         printf("%d\n", depth);
         depth += extend_depth();
 
@@ -212,9 +231,6 @@ int main()
             printf("Black\n");
         else
             printf("White\n");
-
-        if(global_evaluation >= 1e6 || global_evaluation <= 1e6)
-            break;
 
         print_board();
         if (step % 2 == turn)
@@ -226,7 +242,6 @@ int main()
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
         }
 
-        timeout(2);
         system("cls");
         step++;
     }
