@@ -147,9 +147,9 @@ int extend_depth()
             if(board[y][x].type != empty)
                 figures++;
 
-    if(figures < 10) return 4;
-    if(figures < 15) return 3;
-    if(figures < 20) return 2;
+    if(figures < 8) return 4;
+    if(figures < 10) return 3;
+    if(figures < 15) return 2;
     if(figures < 25) return 1;
     return 0;
 }
@@ -205,6 +205,7 @@ int main()
     fill_board();
     while(1)
     {
+        printf("%d\n", depth);
         depth += extend_depth();
 
         if(step % 2 == 1)

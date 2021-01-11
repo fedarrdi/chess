@@ -8,7 +8,8 @@ weight knight_weight(struct position pos) { return 300; }
 enum bool knight_valid_move(struct move move)
 {
     return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 &&
-            move.to.y < SIZE && (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color));
+            move.to.y < SIZE && (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) &&
+            ((mod(move.to.x - move.from.x) == 2 && mod(move.from.y - move.to.y)) == 1 ||(mod(move.to.x - move.from.x) == 1 && mod(move.from.y - move.to.y) == 2 )));
 }
 
 enum bool knight_enum_move(struct position* pos, struct move* move)
@@ -318,14 +319,16 @@ enum bool pawn_enum_move(struct position* pos, struct move* move)
 
     move->to.y = pos->y + f;
     move->to.x = pos->x;
-    if (d.y == -2*f && !d.x) {
+    if (d.y == -2*f && !d.x)
+    {
         if (pawn_valid_move(*move)) return true;
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
     }
 
     move->to.y = pos->y + f;
     move->to.x = pos->x + 1;
-    if (d.y == -f && !d.x) {
+    if (d.y == -f && !d.x)
+    {
         if (pawn_valid_move(*move)) return true;
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
     }
@@ -441,17 +444,17 @@ int attacked_defend(struct position pos)
             struct position pos = {x, y};
             struct move move = {pos, pos};
             while(piece[board[y][x].type].enum_move(&pos, &move))
-                if (move.to.y == pos.y && move.to.x == pos.x)
-                {
-                    if(board[y][x].color == board[pos.y][pos.x].color)
-                        defends++;
-                    else
-                        attacks+=2;
-                }
+            if (move.to.y == pos.y && move.to.x == pos.x)
+            {
+                if(board[y][x].color == board[pos.y][pos.x].color)
+                    defends++;
+                else
+                    attacks++;
+            }
         }
     }
 
-    if(attacks == 0) return  0;
+    if(attacks == 0) return 0;
 
     if(defends < attacks)
         return -piece[board[pos.y][pos.x].type].weight(pos);
