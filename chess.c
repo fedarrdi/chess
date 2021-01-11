@@ -453,7 +453,6 @@ int attacked_defend(struct position pos)
             }
         }
     }
-
     if(attacks == 0) return 0;
 
     if(defends < attacks)
@@ -513,8 +512,8 @@ struct piece piece[]=
                 { empty_weight, empty_valid_move, empty_play_move, empty_enum_move },
                 { pawn_weight, pawn_valid_move, generic_play_move, pawn_enum_move },
                 { knight_weight, knight_valid_move, generic_play_move, knight_enum_move },
-                { bishop_wight, bishop_valid_move, generic_play_move, bishop_enum_move},
-                { rook_weight, rook_valid_move, generic_play_move, rook_enum_move},
+                { bishop_wight, bishop_valid_move, generic_play_move, bishop_enum_move },
+                { rook_weight, rook_valid_move, generic_play_move, rook_enum_move },
                 { queen_weight, queen_valid_move, generic_play_move, queen_enum_move },
                 { king_weight, king_valid_move, generic_play_move, king_enum_move }
         };

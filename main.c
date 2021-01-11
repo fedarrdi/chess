@@ -161,7 +161,7 @@ int main()
 {
     struct move move;
     struct undo undo;
-    int eval = 0, depth, step = 0, alpha = (int) -1e8, beta = (int) 1e8, turn;
+    int eval = 0, depth, step = 0, alpha = -1e8, beta = 1e8, turn;
 
     system("cls");
     printf("                                                      CHESS               \n\n");
@@ -209,23 +209,12 @@ int main()
         depth += extend_depth();
 
         if(step % 2 == 1)
-        {
-            if(global_evaluation >= 1e6)
-            {
-                printf("Black wins!\n");
-                break;
-            }
             printf("Black\n");
-        }
         else
-        {
-            if(global_evaluation <= -1e6)
-            {
-                printf("Black wins!\n");
-                break;
-            }
             printf("White\n");
-        }
+
+        if(global_evaluation >= 1e6 || global_evaluation <= 1e6)
+            break;
 
         print_board();
         if (step % 2 == turn)
