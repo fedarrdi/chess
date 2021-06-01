@@ -1,9 +1,9 @@
 #include "a.h"
-int mod(int a){return (a < 0) ? -a : a;}
-extern int global_evaluation = 0;
+extern long long global_evaluation;
 
-///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-weight knight_weight(struct position pos) { return 300; }
+int mod(int a){return (a < 0) ? -a : a;}
+
+weight knight_weight(struct position pos) { return 350; }
 
 enum bool knight_valid_move(struct move move)
 {
@@ -83,15 +83,29 @@ enum bool knight_enum_move(struct position* pos, struct move* move)
     return false;
 }
 
-///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-weight rook_weight(struct position pos) { return 400; }
+weight rook_weight(struct position pos) { return 500; }
 
 enum bool rook_valid_move(struct move move)
 {
-    return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
+    enum bool a = (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
             (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) &&
             (move.to.x == move.from.x || move.to.y == move.from.y));
+
+    int c = (move.to.x - move.from.x < 0) ? -1 : 1;
+    int d = (move.to.y - move.from.y < 0) ? -1 : 1;
+
+    if(move.to.x - move.from.x == 0) c = 0;
+    if(move.to.y - move.from.y == 0) d = 0;
+
+    struct position pos = {move.from.x + c, move.from.y + d};
+    while(pos.x != move.to.x || pos.y != move.to.y)
+    {
+        if(board[pos.y][pos.x].type != empty) return false;
+        pos.x += c, pos.y += d;
+    }
+
+    return a;
 }
 
 enum bool rook_enum_move(struct position *pos, struct move *move)
@@ -137,14 +151,25 @@ enum bool rook_enum_move(struct position *pos, struct move *move)
     return false;
 }
 
-///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 weight bishop_wight(struct position pos) { return 300; }
 
 enum bool bishop_valid_move(struct move move)
 {
-    return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
-    (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)
-    && move.to.x != move.from.x && move.to.y != move.from.y && mod(move.to.x - move.from.x) == mod(move.to.y - move.from.y));
+    enum bool a = (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
+            (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)
+            && move.to.x != move.from.x && move.to.y != move.from.y && mod(move.to.x - move.from.x) == mod(move.to.y - move.from.y));
+
+    int c = (move.to.x - move.from.x < 0) ? -1 : 1;
+    int d = (move.to.y - move.from.y < 0) ? -1 : 1;
+
+    struct position pos = {move.from.x + c, move.from.y + d};
+    while(pos.x != move.to.x && pos.y != move.to.y)
+    {
+        if(board[pos.y][pos.x].type != empty) return false;
+        pos.x += c, pos.y += d;
+    }
+
+    return a;
 }
 
 enum bool bishop_enum_move(struct position *pos, struct move *move)
@@ -190,14 +215,11 @@ enum bool bishop_enum_move(struct position *pos, struct move *move)
     return false;
 }
 
-///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-weight queen_weight(struct position pos){ return 900; }
+weight queen_weight(struct position pos){ return 1000; }
 
 enum bool queen_valid_move(struct move move)
 {
-    return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE && (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)
-    && ((move.to.x == move.from.x || move.to.y == move.from.y) || (move.to.x != move.from.x && move.to.y != move.from.y && mod(move.to.x - move.from.x) == mod(move.to.y - move.from.y))));
+    return bishop_valid_move(move) || rook_valid_move(move);
 }
 
 enum bool queen_enum_move(struct position *pos, struct move *move)
@@ -234,6 +256,7 @@ enum bool queen_enum_move(struct position *pos, struct move *move)
     if((d.x < 0 && d.y > 0) || (d.x < 0 && !d.y))
     {
         if (!b && queen_valid_move(*move)) return true;
+        b = false, a = 1;
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
     }
 
@@ -284,7 +307,6 @@ enum bool queen_enum_move(struct position *pos, struct move *move)
     return false;
 }
 
-///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 weight pawn_weight(struct position pos)
 {
     int boost = 0;
@@ -299,10 +321,11 @@ enum bool pawn_valid_move(struct move move)
     short t = (board[move.from.y][move.from.x].color == white) ? -1 : 1;
     short s = (board[move.from.y][move.from.x].color == black) ? 1 : 6;
 
-    return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE && (((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x && board[move.to.y][move.to.x].type == empty)  ||
-            ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x + 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
-            ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x - 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
-            ((move.to.y - move.from.y)*t == 2 && move.from.x == move.to.x && board[move.to.y - t][move.to.x].type == empty && board[move.to.y][move.to.x].type == empty && move.from.y == s))) ;
+    return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
+    (((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x && board[move.to.y][move.to.x].type == empty)  ||
+    ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x + 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
+    ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x - 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)||
+    ((move.to.y - move.from.y)*t == 2 && move.from.x == move.to.x && board[move.to.y - t][move.to.x].type == empty && board[move.to.y][move.to.x].type == empty && move.from.y == s))) ;
 }
 
 enum bool pawn_enum_move(struct position* pos, struct move* move)
@@ -342,7 +365,6 @@ enum bool pawn_enum_move(struct position* pos, struct move* move)
     return false;
 }
 
-///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 weight king_weight(struct position pos) { return 1e6; }
 
 enum bool king_valid_move(struct move move)
@@ -422,7 +444,6 @@ enum bool king_enum_move(struct position *pos, struct move* move)
     return false;
 }
 
-///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 weight empty_weight(struct position pos) { return 0; }
 
 enum bool empty_valid_move(struct move move) { return false; }
@@ -432,64 +453,19 @@ enum bool empty_enum_move(struct position *pos, struct move *move) {return false
 void empty_play_move(struct move move, struct undo *taken) {  }
 
 
-///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-int attacked_defend(struct position pos)
-{
-    int attacks = 0, defends = 0;
+int king_move_position(struct position pos);
+int evaluate_piece_move(struct position pos);
+int evaluate_taking(struct position pos, struct undo undo);
+int center_taking(struct position pos);
 
-    for(int y = 0;y < SIZE;y++)
-    {
-        for (int x = 0; x < SIZE; x++)
-        {
-            struct position pos = {x, y};
-            struct move move = {pos, pos};
-            while(piece[board[y][x].type].enum_move(&pos, &move))
-            if (move.to.y == pos.y && move.to.x == pos.x)
-            {
-                if(board[y][x].color == board[pos.y][pos.x].color)
-                    defends++;
-                else
-                    attacks++;
-            }
-        }
-    }
-    if(attacks == 0) return 0;
-
-    if(defends < attacks)
-        return -piece[board[pos.y][pos.x].type].weight(pos);
-    return 0;
-}
-
-int evaluate_piece_move(struct position pos)
-{
-    struct move move = {pos, pos};
-    int danger_squares = 0, attacks = 0;
-
-    while(piece[board[pos.y][pos.x].type].enum_move(&pos, &move))
-    {
-        struct square *from = &board[move.from.y][move.from.x], *to = &board[move.to.y][move.to.x];
-        danger_squares++;
-        if(to->color != from->color) attacks += to->type*10;
-    }
-
-    if(board[pos.y][pos.x].type == knight)
-        danger_squares*=4;
-    else if(board[pos.y][pos.x].type == pawn)
-        danger_squares *= 3;
-    else
-        danger_squares *= 2;
-
-    return danger_squares + attacks;
-}
 
 void undo_move(struct move move, struct undo undo)
 {
     struct square *from = &board[move.from.y][move.from.x], *to = &board[move.to.y][move.to.x];
-    if (to->color == white)
-        global_evaluation -= piece[undo.taken].weight(move.to) + evaluate_piece_move(move.to) + attacked_defend(move.to);
-    else
-        global_evaluation += piece[undo.taken].weight(move.to) + evaluate_piece_move(move.to) + attacked_defend(move.to);
-    *from=*to;
+    int eval = king_move_position(move.to) + evaluate_piece_move(move.to) + evaluate_taking(move.to, undo) + center_taking(move.to) + piece[undo.taken].weight(move.to);
+    if (to->color == white) eval *= -1;
+    global_evaluation += eval;
+    *from = *to;
     to->type = undo.taken;
     to->color = !from->color;
 }
@@ -501,10 +477,9 @@ void generic_play_move(struct move move, struct undo *undo)
     undo->taken = to->type;
     *to = *from;
     from->type = empty;
-    if(to->color == white)
-        global_evaluation += piece[undo->taken].weight(move.to) + evaluate_piece_move(move.to) + attacked_defend(move.to);
-    else
-        global_evaluation -= piece[undo->taken].weight(move.to) + evaluate_piece_move(move.to) + attacked_defend(move.to);
+    int eval = king_move_position(move.to) + evaluate_piece_move(move.to) + evaluate_taking(move.to, *undo) + center_taking(move.to) + piece[undo->taken].weight(move.to);
+    if(to->color == black) eval *= -1;
+    global_evaluation += eval;
 }
 
 struct piece piece[]=
