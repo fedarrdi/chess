@@ -4,7 +4,8 @@
 #include <time.h>
 #include <conio.h>
 #include <stdlib.h>
-long long global_evaluation = 0;
+
+ global_evaluation = 0;
 int move_cnt = 0;
 
 char getPiece(struct square p)

@@ -9,7 +9,7 @@ int min(int a, int b){ return (a < b) ? a : b;}
 int pow(int times, int v)
 {
     int value = 1;
-    for(int i = 1; i <= times; i++, value *= v)
+    for(int i = 1; i <= times; i++, value *= v);
     return value;
 }
 
@@ -63,7 +63,7 @@ int evaluate_piece_move(struct position pos)
         to = &board[move.to.y][move.to.x];
 
         if(to->color == board[move.to.y][move.to.x].color)
-            defends += 3 / (board[move.to.y][move.to.x].type + 1);///if a pawn defends a queen that is useless most of the times but if queen defends a pawn that is always useful
+            defends += 4 / (board[move.to.y][move.to.x].type + 1);///if a pawn defends a queen that is useless most of the times but if queen defends a pawn that is always useful
         else
             danger_squares += to->type + 1;
 
@@ -131,6 +131,7 @@ int piece_early_development(struct position pos)
 
     if(move_cnt < 12 && board[pos.y][pos.x].type > pawn && board[pos.y][pos.x].type < queen)
         return 100;
+
     if(move_cnt > 12 && move_cnt < 22 && board[pos.y][pos.x].type == queen)
         return 15;
 }
