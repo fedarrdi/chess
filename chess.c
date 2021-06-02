@@ -307,14 +307,7 @@ enum bool queen_enum_move(struct position *pos, struct move *move)
     return false;
 }
 
-weight pawn_weight(struct position pos)
-{
-    int boost = 0;
-    if(pos.x == 1 || pos.x == 6) boost = 10;
-    if(pos.x == 2 || pos.x == 5) boost = 20;
-    if(pos.x == 3 || pos.x == 4) boost = 30;
-    return 100 + (board[pos.y][pos.x].color ? 8 - pos.y : pos.y) + boost;
-}
+weight pawn_weight(struct position pos){ return 100; }
 
 enum bool pawn_valid_move(struct move move)
 {
@@ -457,12 +450,15 @@ int king_move_position(struct position pos);
 int evaluate_piece_move(struct position pos);
 int evaluate_taking(struct position pos, struct undo undo);
 int center_taking(struct position pos);
+int space_taking(enum color player);
+int piece_early_development(struct position pos);
+
 
 
 void undo_move(struct move move, struct undo undo)
 {
     struct square *from = &board[move.from.y][move.from.x], *to = &board[move.to.y][move.to.x];
-    int eval = king_move_position(move.to) + evaluate_piece_move(move.to) + evaluate_taking(move.to, undo) + center_taking(move.to) + piece[undo.taken].weight(move.to);
+    int eval = king_move_position(move.to) + evaluate_piece_move(move.to) + evaluate_taking(move.to, undo) + center_taking(move.to) + piece[undo.taken].weight(move.to) + space_taking(to->color) + piece_early_development(move.to);
     if (to->color == white) eval *= -1;
     global_evaluation += eval;
     *from = *to;
@@ -477,7 +473,7 @@ void generic_play_move(struct move move, struct undo *undo)
     undo->taken = to->type;
     *to = *from;
     from->type = empty;
-    int eval = king_move_position(move.to) + evaluate_piece_move(move.to) + evaluate_taking(move.to, *undo) + center_taking(move.to) + piece[undo->taken].weight(move.to);
+    int eval = king_move_position(move.to) + evaluate_piece_move(move.to) + evaluate_taking(move.to, *undo) + center_taking(move.to) + piece[undo->taken].weight(move.to) + space_taking(to->color) + piece_early_development(move.to);
     if(to->color == black) eval *= -1;
     global_evaluation += eval;
 }

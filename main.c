@@ -4,8 +4,8 @@
 #include <time.h>
 #include <conio.h>
 #include <stdlib.h>
-
-extern long long global_evaluation = 0;
+long long global_evaluation = 0;
+int move_cnt = 0;
 
 char getPiece(struct square p)
 {
@@ -51,23 +51,23 @@ void fill_board()
     board[6][6].type = rook;
     board[6][6].color = white;*/
 
-     for(int x = 0;x < SIZE;x++)
-          board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
-      board[0][3].type =  board[7][3].type =  queen;
-      board[0][3].color = black;
-      board[7][3].color = white;
-      board[0][4].type =  board[7][4].type =  king;
-      board[0][4].color = black;
-      board[7][4].color = white;
-      board[0][2].type = board[0][5].type = board[7][2].type = board[7][5].type = bishop;
-      board[0][2].color = board[0][5].color = black;
-      board[7][2].color = board[7][5].color = white;
-      board[0][1].type = board[0][6].type = board[7][1].type = board[7][6].type = knight;
-      board[0][1].color = board[0][6].color = black;
-      board[7][1].color = board[7][6].color = white;
-      board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
-      board[0][0].color = board[0][7].color = black;
-      board[7][0].color = board[7][7].color = white;
+    for(int x = 0;x < SIZE;x++)
+        board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
+    board[0][3].type =  board[7][3].type =  queen;
+    board[0][3].color = black;
+    board[7][3].color = white;
+    board[0][4].type =  board[7][4].type =  king;
+    board[0][4].color = black;
+    board[7][4].color = white;
+    board[0][2].type = board[0][5].type = board[7][2].type = board[7][5].type = bishop;
+    board[0][2].color = board[0][5].color = black;
+    board[7][2].color = board[7][5].color = white;
+    board[0][1].type = board[0][6].type = board[7][1].type = board[7][6].type = knight;
+    board[0][1].color = board[0][6].color = black;
+    board[7][1].color = board[7][6].color = white;
+    board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
+    board[0][0].color = board[0][7].color = black;
+    board[7][0].color = board[7][7].color = white;
 }
 
 void print_board()
@@ -183,12 +183,6 @@ int main()
 
     scanf("%d", &depth);
 
-    if (depth % 2 != 0)
-    {
-        printf("\nInvalid choice, please choose again!\n\n\n");
-        goto Enter;
-    }
-
     system("cls");
     turn1:;
     printf("Please choose piece color\n"
@@ -243,6 +237,7 @@ int main()
                 find_best_move(&move, &eval, turn, depth, alpha, beta);
                 piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
             }
+            move_cnt++;
             turn = !turn;
         }
     }
@@ -269,6 +264,7 @@ int main()
             piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
             printf("global evaluation = %d \n", global_evaluation);
             print_board();
+            move_cnt++;
 
             turn = !turn;
             timeout(2);
