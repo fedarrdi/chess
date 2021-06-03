@@ -139,7 +139,7 @@ void move_piece(enum color color)
     }
 
     struct undo taken;
-    piece[board[from.y][from.x].type].play_move(move, &taken);
+    piece[board[from.y][from.x].type].play_move(&move, &taken);
     board[from.y][from.x].type = empty;
 }
 
@@ -176,8 +176,8 @@ int main()
 
     printf("Please choose your level:\n"
            "0 - New to Chess\n"
-           "2 - Beginner\n"
-           "4 - Intermediate\n"
+           "4 - Beginner\n"
+           "5 - Intermediate\n"
            "6 - Grandmaster / Advanced\n\n\n");
     Enter:;
     printf("Enter: ");
@@ -236,7 +236,7 @@ int main()
             else
             {
                 find_best_move(&move, &eval, turn, depth, alpha, beta);
-                piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
+                piece[board[move.from.y][move.from.x].type].play_move(&move, &undo);
             }
             move_cnt++;
             turn = !turn;
@@ -262,7 +262,7 @@ int main()
 
             find_best_move(&move, &eval, turn, depth, alpha, beta);
 
-            piece[board[move.from.y][move.from.x].type].play_move(move, &undo);
+            piece[board[move.from.y][move.from.x].type].play_move(&move, &undo);
             printf("global evaluation = %d \n", global_evaluation);
             print_board();
             move_cnt++;

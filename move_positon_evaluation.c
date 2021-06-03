@@ -39,26 +39,26 @@ struct position find_piece(enum type piece, enum color color)
                 return pos;
 }
 
-int king_move_position(struct position pos)
+int king_move_position(const struct position *pos)
 {
     int evaluation = 0;
     float endGameWeight = game_weight();
-    struct position enemy_king = find_piece(king, !board[pos.y][pos.x].color);
-    struct position my_king = find_piece(king, board[pos.y][pos.x].color);
+    struct position enemy_king = find_piece(king, !board[pos->y][pos->x].color);
+    struct position my_king = find_piece(king, board[pos->y][pos->x].color);
     int dstFromEnemyKing = mod(my_king.x - enemy_king.x) + mod(my_king.y - enemy_king.y);
     int dstEnemyKingFromCenter = max(3 - enemy_king.x, enemy_king.x - 4) + max(3 - enemy_king.y, enemy_king.y - 4);
     evaluation += dstEnemyKingFromCenter*2 + 14 - dstFromEnemyKing;
     return evaluation * 10 * endGameWeight;
 }
 
-int evaluate_piece_move(struct position pos)
+int evaluate_piece_move(const struct position *pos)
 {
-    struct move move = {pos, pos};
+    struct move move = {*pos, *pos};
     int danger_squares = 0, defends = 0, king_attack = 0;
     struct square *to;
-    struct position enemyKingPos = find_piece(king, !board[pos.y][pos.x].color), move_pos;
+    struct position enemyKingPos = find_piece(king, !board[pos->y][pos->x].color), move_pos;
 
-    while(piece[board[pos.y][pos.x].type].enum_move(&pos, &move))
+    while(piece[board[pos->y][pos->x].type].enum_move(pos, &move))
     {
         to = &board[move.to.y][move.to.x];
 
@@ -71,25 +71,25 @@ int evaluate_piece_move(struct position pos)
         if(dstBtwEnemyKingLineOfFire < 3) king_attack += 2;
     }
 
-    if(board[pos.y][pos.x].type == knight) danger_squares *= 3;
-    else if(board[pos.y][pos.x].type == pawn) danger_squares *= 2;
+    if(board[pos->y][pos->x].type == knight) danger_squares *= 3;
+    else if(board[pos->y][pos->x].type == pawn) danger_squares *= 2;
 
     return danger_squares + defends + king_attack;
 }
 
-int evaluate_taking(struct position pos, struct undo undo)
+int evaluate_taking(const struct position *pos, const struct undo *undo)
 {
-    struct square *from = &board[pos.y][pos.x];
+    struct square *from = &board[pos->y][pos->x];
 
-    if(undo.taken == empty)
+    if(undo->taken == empty)
         return 0;
 
     int activity_of_taken_piece = 500/(evaluate_piece_move(pos) + 1);
 
-    if((from->color == black && global_evaluation <= piece[knight].weight(pos)) || (from->color == white && global_evaluation >= piece[knight].weight(pos)))
+    if((from->color == black && global_evaluation <= piece[knight].weight(*pos)) || (from->color == white && global_evaluation >= piece[knight].weight(*pos)))
         return 20 + activity_of_taken_piece;
 
-    if((from->color == black && global_evaluation >= piece[knight].weight(pos)) || (from->color == white && global_evaluation <= piece[knight].weight(pos)))
+    if((from->color == black && global_evaluation >= piece[knight].weight(*pos)) || (from->color == white && global_evaluation <= piece[knight].weight(*pos)))
         return -100 + activity_of_taken_piece;
 
     if(game_weight() > 0.95)
@@ -97,11 +97,11 @@ int evaluate_taking(struct position pos, struct undo undo)
 }
 
 ///best in the start of thee game when strong pieces need to stay protected and pawn need to be in the front
-int center_taking(struct position pos)
+int center_taking(const struct position *pos)
 {
-    int eval = 200/pow(board[pos.y][pos.x].type, 2);///the weaker the piece the better to be in the middle of the board
-    eval /= min(mod(3 - pos.x), mod(4 - pos.x)) + 1;/// the greater the dist from the center the bigger the divider
-    eval /= min(mod(4 - pos.y), mod(5 - pos.y)) + 1;/// if the piece is in the middle of the board give more points
+    int eval = 200/pow(board[pos->y][pos->x].type, 2);///the weaker the piece the better to be in the middle of the board
+    eval /= min(mod(3 - pos->x), mod(4 - pos->x)) + 1;/// the greater the dist from the center the bigger the divider
+    eval /= min(mod(4 - pos->y), mod(5 - pos->y)) + 1;/// if the piece is in the middle of the board give more points
     return eval;
 }
 
@@ -124,14 +124,17 @@ int space_taking(enum color player)
 }
 
 ///develop piece in the start of the game
-int piece_early_development(struct position pos)
+int piece_early_development(const struct position *pos)
 {
-    if(move_cnt <= 22 || board[pos.y][pos.x].type == pawn)
+    if(move_cnt <= 22 || board[pos->y][pos->x].type == pawn)
         return 0;
 
-    if(move_cnt < 12 && board[pos.y][pos.x].type > pawn && board[pos.y][pos.x].type < queen)
+    if(move_cnt < 12 && board[pos->y][pos->x].type > pawn && board[pos->y][pos->x].type < queen)
         return 100;
 
-    if(move_cnt > 12 && move_cnt < 22 && board[pos.y][pos.x].type == queen)
+    if(move_cnt > 12 && move_cnt < 22 && board[pos->y][pos->x].type == queen)
         return 15;
+
+    if(move_cnt < 12 && board[pos->y][pos->x].type == queen)
+        return -20;
 }

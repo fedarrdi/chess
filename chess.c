@@ -443,37 +443,37 @@ enum bool empty_valid_move(struct move move) { return false; }
 
 enum bool empty_enum_move(struct position *pos, struct move *move) {return false;}
 
-void empty_play_move(struct move move, struct undo *taken) {  }
+void empty_play_move(struct move *move, struct undo *taken) {  }
 
 
-int king_move_position(struct position pos);
-int evaluate_piece_move(struct position pos);
-int evaluate_taking(struct position pos, struct undo undo);
-int center_taking(struct position pos);
+int king_move_position(const struct position *pos);
+int evaluate_piece_move(const struct position *pos);
+int evaluate_taking(const struct position *pos, const struct undo *undo);
+int center_taking(const struct position *pos);
 int space_taking(enum color player);
-int piece_early_development(struct position pos);
+int piece_early_development(const struct position *pos);
 
 
 
-void undo_move(struct move move, struct undo undo)
+void undo_move(struct move *move, struct undo *undo)
 {
-    struct square *from = &board[move.from.y][move.from.x], *to = &board[move.to.y][move.to.x];
-    int eval = king_move_position(move.to) + evaluate_piece_move(move.to) + evaluate_taking(move.to, undo) + center_taking(move.to) + piece[undo.taken].weight(move.to) + space_taking(to->color) + piece_early_development(move.to);
+    struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
+    int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) + center_taking(&move->to) + piece[undo->taken].weight(move->to) + space_taking(to->color) + piece_early_development(&move->to);
     if (to->color == white) eval *= -1;
     global_evaluation += eval;
     *from = *to;
-    to->type = undo.taken;
+    to->type = undo->taken;
     to->color = !from->color;
 }
 
-void generic_play_move(struct move move, struct undo *undo)
+void generic_play_move(struct move *move, struct undo *undo)
 {
-    undo->position = move.to;
-    struct square *from = &board[move.from.y][move.from.x], *to = &board[move.to.y][move.to.x];
+    undo->position = move->to;
+    struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
     undo->taken = to->type;
     *to = *from;
     from->type = empty;
-    int eval = king_move_position(move.to) + evaluate_piece_move(move.to) + evaluate_taking(move.to, *undo) + center_taking(move.to) + piece[undo->taken].weight(move.to) + space_taking(to->color) + piece_early_development(move.to);
+    int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) + center_taking(&move->to) + piece[undo->taken].weight(move->to) + space_taking(to->color) + piece_early_development(&move->to);
     if(to->color == black) eval *= -1;
     global_evaluation += eval;
 }
