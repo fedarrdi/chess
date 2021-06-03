@@ -1,5 +1,6 @@
 #include "a.h"
 extern long long global_evaluation;
+extern int move_cnt;
 
 void undo_move(struct move *move, struct undo *undo);
 
@@ -33,6 +34,7 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
     while(enum_board(player, &curr_move))
     {
         piece[board[curr_move.from.y][curr_move.from.x].type].play_move(&curr_move, &taken);
+        move_cnt++;
 
         int curr_eval = global_evaluation;
 
@@ -46,6 +48,7 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
         }
 
         undo_move(&curr_move, &taken);
+        move_cnt--;
 
         if(beta <= alpha) break;
     }

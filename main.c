@@ -5,7 +5,7 @@
 #include <conio.h>
 #include <stdlib.h>
 
- global_evaluation = 0;
+long long global_evaluation = 0;
 int move_cnt = 0;
 
 char getPiece(struct square p)
@@ -175,7 +175,7 @@ int main()
     system("cls");
 
     printf("Please choose your level:\n"
-           "0 - New to Chess\n"
+           "0  - New to Chess\n"
            "4 - Beginner\n"
            "5 - Intermediate\n"
            "6 - Grandmaster / Advanced\n\n\n");
