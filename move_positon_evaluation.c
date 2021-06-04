@@ -18,16 +18,19 @@ float game_weight()
     float weight = 0;
     for(struct position pos = {0, 0};pos.y < SIZE;pos.y++)
         for(;pos.x < SIZE;pos.x++)
-            weight += board[pos.y][pos.x].type;
+            weight += piece[board[pos.y][pos.x].type].weight(pos);
     /**
-     total sum of piece weight = 2 007 992
-     squash it to number between 1 and 0 1 = 2 007 992
-     1 thousand different numbers
-     2 007 992 / 1000 ~= 2007
-     => 2 007 992 / 2007 while > 1 = a number between 1 and 0 scalable for chess weight
+     first we round 10003300 to 1000000
+     total sum of piece weight = 10000000
+     squash it to number between 1 and 0 1 = 1000000
+     if we divide by 10 8 times we will get 1
+     if we divide smaller number by 10 8 times it will become less then 1
+     and always bigger than 0 because board.value is always > 0
     */
-    while(weight >= 1)
-        weight /= 2007;
+    weight -= 3300;
+    for(int i = 1;i < 8;i++)
+        weight /= 10;
+
     return  weight;
 }
 
@@ -42,7 +45,7 @@ struct position find_piece(enum type piece, enum color color)
 int king_move_position(const struct position *pos)
 {
     int evaluation = 0;
-    float endGameWeight = game_weight();
+    float endGameWeight = mod(1 - game_weight());
     struct position enemy_king = find_piece(king, !board[pos->y][pos->x].color);
     struct position my_king = find_piece(king, board[pos->y][pos->x].color);
     int dstFromEnemyKing = mod(my_king.x - enemy_king.x) + mod(my_king.y - enemy_king.y);
@@ -102,7 +105,7 @@ int center_taking(const struct position *pos)
     int eval = 200/pow(board[pos->y][pos->x].type, 2);///the weaker the piece the better to be in the middle of the board
     eval /= min(mod(3 - pos->x), mod(4 - pos->x)) + 1;/// the greater the dist from the center the bigger the divider
     eval /= min(mod(4 - pos->y), mod(5 - pos->y)) + 1;/// if the piece is in the middle of the board give more points
-    return eval;
+    return eval * game_weight();
 }
 
 void calc_space(int *white_space, int *black_space)
@@ -110,17 +113,15 @@ void calc_space(int *white_space, int *black_space)
     for(int y = 0;y < SIZE;y++)
         for(int x = 0;x < SIZE;x++)
             if(board[y][x].type == pawn)
-                if(board[y][x].color == white) (*white_space) += SIZE - y - 1;
-                else                           (*black_space) += y + 1;
+                board[y][x].color == white ? ((*white_space) += SIZE - y - 1) : ((*black_space) += y + 1);
 }
 
 int space_taking(enum color player)
 {
     int white_space = 0, black_space = 0;
     calc_space(&white_space, &black_space);
-    white_space*=5, black_space*=5;
-    if(player == black) return (black_space - white_space);
-    return  (white_space - black_space);
+    white_space*=2, black_space*=2;
+    return (player == black ? black_space - white_space : white_space - black_space) * game_weight();
 }
 
 ///develop piece in the start of the game
