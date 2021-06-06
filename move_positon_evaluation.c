@@ -27,6 +27,7 @@ float game_weight()
      if we divide smaller number by 10 8 times it will become less then 1
      and always bigger than 0 because board.value is always > 0
     */
+    
     weight -= 3300;
     for(int i = 1;i < 8;i++)
         weight /= 10;
@@ -45,7 +46,7 @@ struct position find_piece(enum type piece, enum color color)
 int king_move_position(const struct position *pos)
 {
     int evaluation = 0;
-    float endGameWeight = mod(1 - game_weight());
+    float endGameWeight = mod(1 - game_weight());/// reverse
     struct position enemy_king = find_piece(king, !board[pos->y][pos->x].color);
     struct position my_king = find_piece(king, board[pos->y][pos->x].color);
     int dstFromEnemyKing = mod(my_king.x - enemy_king.x) + mod(my_king.y - enemy_king.y);
@@ -102,7 +103,7 @@ int evaluate_taking(const struct position *pos, const struct undo *undo)
 ///best in the start of thee game when strong pieces need to stay protected and pawn need to be in the front
 int center_taking(const struct position *pos)
 {
-    int eval = 200/pow(board[pos->y][pos->x].type, 2);///the weaker the piece the better to be in the middle of the board
+    int eval = 300/pow(board[pos->y][pos->x].type, 2);///the weaker the piece the better to be in the middle of the board
     eval /= min(mod(3 - pos->x), mod(4 - pos->x)) + 1;/// the greater the dist from the center the bigger the divider
     eval /= min(mod(4 - pos->y), mod(5 - pos->y)) + 1;/// if the piece is in the middle of the board give more points
     return eval * game_weight();
@@ -121,7 +122,7 @@ int space_taking(enum color player)
     int white_space = 0, black_space = 0;
     calc_space(&white_space, &black_space);
     white_space*=2, black_space*=2;
-    return (player == black ? black_space - white_space : white_space - black_space) * game_weight();
+    return (player == black ? black_space - white_space : white_space - black_space) * mod(0.5 - game_weight());
 }
 
 ///develop piece in the start of the game

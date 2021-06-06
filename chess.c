@@ -459,8 +459,10 @@ void undo_move(struct move *move, struct undo *undo)
 {
     struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
     int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) + center_taking(&move->to) + piece[undo->taken].weight(move->to) + space_taking(to->color) + piece_early_development(&move->to);
+
     if (to->color == white) eval *= -1;
     global_evaluation += eval;
+
     *from = *to;
     to->type = undo->taken;
     to->color = !from->color;

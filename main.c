@@ -213,6 +213,7 @@ int main()
 
     if(mode == 1)
     {
+        int org_depth = depth;
         while (true)
         {
             if (global_evaluation >= 1e6)
@@ -230,6 +231,8 @@ int main()
             printf(turn ? "White\n" : "Black\n");
             print_board();
 
+            depth = move_cnt < 3 ? 3 : org_depth;
+
             if (turn)
                 move_piece(turn);
 
@@ -238,6 +241,7 @@ int main()
                 find_best_move(&move, &eval, turn, depth, alpha, beta);
                 piece[board[move.from.y][move.from.x].type].play_move(&move, &undo);
             }
+            printf("depth = %d\n", depth);
             move_cnt++;
             turn = !turn;
         }
