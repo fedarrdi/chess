@@ -39,18 +39,18 @@ void fill_board()
 
 
     ///two rook endgame
-    /*board[5][3].type = rook;
+    board[5][3].type = rook;
     board[6][4].type = rook;
     board[7][6].type = king;
-    board[7][6].color = white;*/
+    board[7][6].color = white;
 
     ///rook and king VS rook and king
-    board[1][3].type = rook;
+    /*board[1][3].type = rook;
     board[2][3].type = king;
     board[5][5].type = king;
     board[5][5].color = white;
-    board[6][6].type = rook;
-    board[6][6].color = white;
+    board[6][3].type = rook;
+    board[6][3].color = white;*/
 
     /*for(int x = 0;x < SIZE;x++)
         board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
@@ -232,7 +232,7 @@ int main()
             printf(turn ? "White\n" : "Black\n");
             print_board();
 
-            depth = move_cnt < 3 ? 3 : org_depth;
+            depth = move_cnt < 4 ? 3 : org_depth;
 
             if (turn)
                 move_piece(turn);
@@ -242,6 +242,7 @@ int main()
                 int undo_eval;
                 find_best_move(&move, &eval, turn, depth, alpha, beta);
                 piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
+                printf("%d, %d , %d, %d", move.from.x, move.from.y, move.to.x, move.to.y);
             }
             printf("depth = %d\n", depth);
             move_cnt++;

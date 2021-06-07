@@ -51,8 +51,8 @@ int king_move_position(const struct position *pos)
     struct position my_king = find_piece(king, board[pos->y][pos->x].color);
     int dstFromEnemyKing = mod(my_king.x - enemy_king.x) + mod(my_king.y - enemy_king.y);
     int dstEnemyKingFromCenter = max(3 - enemy_king.x, enemy_king.x - 4) + max(3 - enemy_king.y, enemy_king.y - 4);
-    evaluation += dstEnemyKingFromCenter*2 + 14 - dstFromEnemyKing;
-    return evaluation * 10 * endGameWeight;
+    evaluation += dstEnemyKingFromCenter + 14 - dstFromEnemyKing;
+    return evaluation * endGameWeight;
 }
 
 int evaluate_piece_move(const struct position *pos)
