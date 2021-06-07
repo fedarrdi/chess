@@ -27,7 +27,7 @@ float game_weight()
      if we divide smaller number by 10 8 times it will become less then 1
      and always bigger than 0 because board.value is always > 0
     */
-    
+
     weight -= 3300;
     for(int i = 1;i < 8;i++)
         weight /= 10;

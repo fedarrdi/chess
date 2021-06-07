@@ -139,7 +139,8 @@ void move_piece(enum color color)
     }
 
     struct undo taken;
-    piece[board[from.y][from.x].type].play_move(&move, &taken);
+    int undo_move;
+    piece[board[from.y][from.x].type].play_move(&move, &taken, &undo_move);
     board[from.y][from.x].type = empty;
 }
 
@@ -238,8 +239,9 @@ int main()
 
             else
             {
+                int undo_eval;
                 find_best_move(&move, &eval, turn, depth, alpha, beta);
-                piece[board[move.from.y][move.from.x].type].play_move(&move, &undo);
+                piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
             }
             printf("depth = %d\n", depth);
             move_cnt++;
@@ -265,8 +267,8 @@ int main()
             printf(turn ? "White\n" : "Black\n");
 
             find_best_move(&move, &eval, turn, depth, alpha, beta);
-
-            piece[board[move.from.y][move.from.x].type].play_move(&move, &undo);
+            int undo_eval;
+            piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
             printf("global evaluation = %d \n", global_evaluation);
             print_board();
             move_cnt++;
