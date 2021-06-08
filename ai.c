@@ -29,7 +29,7 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
 {
     struct move curr_move = {{0, 0}, {-1, 0}}, best_move = {{0, 0}, {-1, 0}};
     struct undo taken;
-    int best_eval = (player == white) ? -1e9 : 1e9;
+    long long  best_eval = (player == white) ? -1e10 : 1e10;
     int undo_eval;
 
     while(enum_board(player, &curr_move))
@@ -44,7 +44,7 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
         if((player == black && best_eval >= curr_eval) || (player == white && best_eval <= curr_eval))
         {
             (player) ? (alpha = curr_eval) : (beta = curr_eval);
-            best_eval = curr_eval - depth;
+            best_eval = curr_eval;
             best_move = curr_move;
         }
 
