@@ -39,10 +39,10 @@ void fill_board()
 
 
     ///two rook endgame
-    /*board[0][0].type = rook;
+    board[0][0].type = rook;
     board[0][1].type = rook;
     board[4][4].type = king;
-    board[4][4].color = white;*/
+    board[4][4].color = white;
 
     ///rook and king VS rook and king
     /*board[1][3].type = rook;
@@ -52,7 +52,7 @@ void fill_board()
     board[6][3].type = rook;
     board[6][3].color = white;*/
 
-    for(int x = 0;x < SIZE;x++)
+    /*for(int x = 0;x < SIZE;x++)
         board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
     board[0][3].type =  board[7][3].type =  queen;
     board[0][3].color = black;
@@ -68,7 +68,7 @@ void fill_board()
     board[7][1].color = board[7][6].color = white;
     board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
     board[0][0].color = board[0][7].color = black;
-    board[7][0].color = board[7][7].color = white;
+    board[7][0].color = board[7][7].color = white;*/
 }
 
 void print_board()
