@@ -39,6 +39,15 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
 
         int curr_eval = global_evaluation;
 
+        if((player == black && curr_eval <= -1e6) || (player == white && curr_eval >= 1e6))
+        {
+            best_eval = curr_eval;
+            best_move = curr_move;
+            undo_move(&curr_move, &taken, &undo_eval);
+            move_cnt--;
+            break;
+        }
+
         if(depth) find_best_move(move, &curr_eval, !player, depth - 1, alpha, beta);
 
         if((player == black && best_eval >= curr_eval) || (player == white && best_eval <= curr_eval))
