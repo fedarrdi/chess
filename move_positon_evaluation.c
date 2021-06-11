@@ -75,10 +75,10 @@ int evaluate_piece_move(const struct position *pos)
         if(dstBtwEnemyKingLineOfFire < 3) king_attack += 2;
     }
 
-    if(board[pos->y][pos->x].type == knight) danger_squares *= 3;
+    if(board[pos->y][pos->x].type == knight) danger_squares *= 5;
     else if(board[pos->y][pos->x].type == pawn) danger_squares *= 2;
 
-    return danger_squares + defends + king_attack;
+    return 2*(danger_squares + defends + king_attack);
 }
 
 int evaluate_taking(const struct position *pos, const struct undo *undo)
@@ -128,15 +128,35 @@ int space_taking(enum color player)
 ///develop piece in the start of the game
 int piece_early_development(const struct position *pos)
 {
-    if(move_cnt <= 22 || board[pos->y][pos->x].type == pawn)
+    if (move_cnt <= 22 || board[pos->y][pos->x].type == pawn)
         return 0;
 
-    if(move_cnt < 12 && board[pos->y][pos->x].type > pawn && board[pos->y][pos->x].type < queen)
+    if (move_cnt < 12 && board[pos->y][pos->x].type > pawn && board[pos->y][pos->x].type < queen)
         return 100;
 
-    if(move_cnt > 12 && move_cnt < 22 && board[pos->y][pos->x].type == queen)
+    if (move_cnt > 12 && move_cnt < 22 && board[pos->y][pos->x].type == queen)
         return 15;
 
-    if(move_cnt < 12 && board[pos->y][pos->x].type == queen)
-        return -20;
+    if (move_cnt < 12 && board[pos->y][pos->x].type == queen)
+        return -200;
+}
+
+int evaluate_king_position_mid_game(struct position *pos)
+{
+    if(board[pos->y][pos->x].type != king) return 0;
+    enum color king_color = board[pos->y][pos->x].color;
+    int king_safety = 0;
+
+    if(pos->x + 1 < SIZE && board[pos->y][pos->x + 1].color == king_color) king_safety ++;
+    if(pos->x - 1 >= 0 && board[pos->y][pos->x - 1].color == king_color) king_safety ++;
+    if(pos->y + 1 < SIZE && board[pos->y + 1][pos->x].color == king_color) king_safety ++;
+    if(pos->y - 1 >= 0 && board[pos->y - 1][pos->x].color == king_color) king_safety ++;
+    if(pos->x + 1 < SIZE &&  pos->y + 1 < SIZE && board[pos->y + 1][pos->x + 1].color == king_color) king_safety ++;
+    if(pos->x - 1 >= 0 && pos->y + 1 < SIZE && board[pos->y + 1][pos->x - 1].color == king_color) king_safety ++;
+    if(pos->y - 1 >= 0 && pos->x + 1 < SIZE && board[pos->y - 1][pos->x + 1].color == king_color) king_safety ++;
+    if(pos->y - 1 >= 0 && pos->x - 1 >= 0 && board[pos->y - 1][pos->x - 1].color == king_color) king_safety ++;
+
+    int king_dst_from_center = max(mod(pos->x - 3), mod(pos->x - 4)) * max(mod(pos->y - 3), mod(pos->y - 4));
+
+    return (king_safety + king_dst_from_center)*game_weight();
 }

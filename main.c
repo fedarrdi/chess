@@ -2,7 +2,6 @@
 #include<stdio.h>
 #include "a.h"
 #include <time.h>
-#include <conio.h>
 #include <stdlib.h>
 
 long long global_evaluation = 0;
@@ -31,28 +30,23 @@ void fill_board()
         for(int x = 0;x < SIZE;x++)
             board[y][x].type = empty;
 
-    ///rook and king endgame
-    /*board[1][1].type = rook;
-    board[2][2].type = king;
-    board[5][5].type = king;
-    board[5][5].color = white;*/
-
 
     ///two rook endgame
-    /*board[0][0].type = rook;
+    /*board[0][7].type = king;
+    board[0][0].type = rook;
     board[0][1].type = rook;
     board[4][4].type = king;
     board[4][4].color = white;*/
 
     ///rook and king VS rook and king
-    board[1][1].type = rook;
+    /*board[1][1].type = rook;
     board[2][1].type = king;
     board[5][5].type = king;
     board[5][5].color = white;
     board[6][1].type = rook;
-    board[6][1].color = white;
+    board[6][1].color = white;*/
 
-    /*for(int x = 0;x < SIZE;x++)
+    for(int x = 0;x < SIZE;x++)
         board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
     board[0][3].type =  board[7][3].type =  queen;
     board[0][3].color = black;
@@ -68,7 +62,7 @@ void fill_board()
     board[7][1].color = board[7][6].color = white;
     board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
     board[0][0].color = board[0][7].color = black;
-    board[7][0].color = board[7][7].color = white;*/
+    board[7][0].color = board[7][7].color = white;
 }
 
 void print_board()
@@ -172,20 +166,17 @@ int main()
            "r - Rook\n"
            "p - Pawn\n\n\n"
            "Press Any Key To Continue...");
-    //getch();
-    system("cls");
 
     printf("Please choose your level:\n"
            "0  - New to Chess\n"
-           "4 - Beginner\n"
-           "5 - Intermediate\n"
+           "2 - Beginner\n"
+           "4 - Intermediate\n"
            "6 - Grandmaster / Advanced\n\n\n");
     Enter:;
     printf("Enter: ");
 
     scanf("%d", &depth);
 
-    system("cls");
     turn1:;
     printf("Please choose piece color\n"
            "0 - Black\n"
@@ -211,10 +202,8 @@ int main()
     }
 
     fill_board();
-
     if(mode == 1)
     {
-        int org_depth = depth;
         while (true)
         {
             if (global_evaluation >= 1e6)
@@ -231,8 +220,6 @@ int main()
 
             printf(turn ? "White\n" : "Black\n");
             print_board();
-
-            depth = move_cnt < 4 ? 3 : org_depth;
 
             if (turn)
                 move_piece(turn);

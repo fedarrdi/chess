@@ -39,9 +39,10 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
 
         int curr_eval = global_evaluation;
 
+        ///if the move leads to taking the king don't search deeper because the evaluation in future moves is unreal
         if((player == black && curr_eval <= -1e6) || (player == white && curr_eval >= 1e6))
         {
-            best_eval = curr_eval;
+            best_eval = curr_eval - depth;
             best_move = curr_move;
             undo_move(&curr_move, &taken, &undo_eval);
             move_cnt--;
@@ -53,7 +54,7 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
         if((player == black && best_eval >= curr_eval) || (player == white && best_eval <= curr_eval))
         {
             (player) ? (alpha = curr_eval) : (beta = curr_eval);
-            best_eval = curr_eval;
+            best_eval = curr_eval - depth;
             best_move = curr_move;
         }
 

@@ -452,6 +452,7 @@ int evaluate_taking(const struct position *pos, const struct undo *undo);
 int center_taking(const struct position *pos);
 int space_taking(enum color player);
 int piece_early_development(const struct position *pos);
+int evaluate_king_position_mid_game(struct position *pos);
 
 
 
@@ -471,7 +472,7 @@ void generic_play_move(struct move *move, struct undo *undo, int *undo_eval)
     undo->taken = to->type;
     *to = *from;
     from->type = empty;
-    int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) + center_taking(&move->to) + piece[undo->taken].weight(move->to) + space_taking(to->color) + piece_early_development(&move->to);
+    int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) + center_taking(&move->to) + piece[undo->taken].weight(move->to) + space_taking(to->color) + piece_early_development(&move->to) + evaluate_king_position_mid_game(&move->to);
     if(to->color == black) eval *= -1;
     *undo_eval = eval;
     global_evaluation += eval;
