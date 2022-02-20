@@ -1,5 +1,8 @@
 #include "a.h"
+
 extern long long global_evaluation;
+extern struct square board[8][8];
+extern struct piece piece[7];
 extern int move_cnt;
 
 void undo_move(struct move *move, struct undo *undo, const int *undo_eval);

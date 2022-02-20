@@ -1,6 +1,8 @@
 #include "a.h"
 
 extern long long global_evaluation;
+extern struct square board[8][8];
+extern struct piece piece[7];
 extern int move_cnt;
 
 int mod(int a);
@@ -128,17 +130,13 @@ int space_taking(enum color player)
 ///develop piece in the start of the game
 int piece_early_development(const struct position *pos)
 {
-    if (move_cnt <= 22 || board[pos->y][pos->x].type == pawn)
-        return 0;
+    if (move_cnt <= 22 || board[pos->y][pos->x].type == pawn) return 0;
 
-    if (move_cnt < 12 && board[pos->y][pos->x].type > pawn && board[pos->y][pos->x].type < queen)
-        return 100;
+    if (move_cnt < 12 && board[pos->y][pos->x].type > pawn && board[pos->y][pos->x].type < queen) return 100;
 
-    if (move_cnt > 12 && move_cnt < 22 && board[pos->y][pos->x].type == queen)
-        return 15;
+    if (move_cnt > 12 && move_cnt < 22 && board[pos->y][pos->x].type == queen) return 15;
 
-    if (move_cnt < 12 && board[pos->y][pos->x].type == queen)
-        return -200;
+    if (move_cnt < 12 && board[pos->y][pos->x].type == queen) return -200;
 }
 
 int evaluate_king_position_mid_game(struct position *pos)
