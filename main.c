@@ -271,7 +271,10 @@ int main()
     }
     return 0;
 }
-/*void undo_move(struct move *move, struct undo *undo, const int *undo_eval);
+
+///Test code for new moves
+/*
+void undo_move(struct move *move, struct undo *undo, const int *undo_eval);
 
 int main()
 {
@@ -288,12 +291,14 @@ int main()
     struct undo taken;
 
     int undo_eval;
-
+    print_board();
     while(piece[board[pos.y][pos.x].type].enum_move(&pos, &move))
     {
         piece[board[pos.y][pos.x].type].play_move(&move, &taken, &undo_eval);
         print_board();
         undo_move(&move, &taken, &undo_eval);
+        print_board();
+        printf("====================================================================\n\n\n");
     }
 
     return 0;

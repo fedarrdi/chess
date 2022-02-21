@@ -365,7 +365,6 @@ weight king_weight(struct position pos) { return 1e7; }
 
 enum bool king_valid_move(struct move move)
 {
-    ///celiqt kod moje da se oprosti ima povtarqne
     if(mod(move.from.x - move.to.x) == 2 && !board[move.from.y][move.from.x].has_been_moved && (!board[move.from.y][0].has_been_moved || !board[move.from.y][7].has_been_moved))
     {
         if(move.to.x - move.from.x == 2)
@@ -461,12 +460,6 @@ enum bool king_enum_move(struct position *pos, struct move* move)
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
     }
 
-    /**
-    -------------------------------
-    | Castle                      |
-    -------------------------------
-    */
-
     move->to.x = pos->x - 2;
     move->to.y = pos->y;
     if(d.y == 1 && d.x == 1)
@@ -529,7 +522,7 @@ void undo_move(struct move *move, struct undo *undo, const int *undo_eval)
 {
     global_evaluation -= *undo_eval;
 
-    if(mod(move->from.x - move->to.x) == 2 && board[move->from.y][move->from.x].type == king)
+    if(mod(move->from.x - move->to.x) == 2 && board[move->to.y][move->to.x].type == king)
     {
         undo_castle(move, undo);
         return;
@@ -609,7 +602,7 @@ void generic_play_move(struct move *move, struct undo *undo, int *undo_eval)
     global_evaluation += eval;
 }
 
-struct piece piece[]=
+struct piece piece[] =
         {
                 { empty_weight, empty_valid_move, empty_play_move, empty_enum_move },
                 { pawn_weight, pawn_valid_move, generic_play_move, pawn_enum_move },
