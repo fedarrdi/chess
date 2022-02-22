@@ -1,10 +1,11 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include "a.h"
 #include <time.h>
 #include <stdlib.h>
 
 long long global_evaluation = 0;
+struct square board[8][8];
+extern struct piece piece[7];
 int move_cnt = 0;
 
 char getPiece(struct square p)
@@ -28,8 +29,10 @@ void fill_board()
 {
     for(int y = 0;y < SIZE;y++)
         for(int x = 0;x < SIZE;x++)
+        {
             board[y][x].type = empty;
-
+            board[y][x].has_been_moved = 0;
+        }
 
     ///two rook endgame
     /*board[0][7].type = king;
@@ -254,12 +257,12 @@ int main()
 
             printf(turn ? "White\n" : "Black\n");
 
+            print_board();
             find_best_move(&move, &eval, turn, depth, alpha, beta);
             int undo_eval;
             piece[board[move.from.y][move.from.x].type].play_move(&move, &undo, &undo_eval);
             printf("global evaluation = %d \n", global_evaluation);
             printf("%d, %d, %d, %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
-            print_board();
             move_cnt++;
 
             turn = !turn;
@@ -268,3 +271,35 @@ int main()
     }
     return 0;
 }
+
+///Test code for new moves
+/*
+void undo_move(struct move *move, struct undo *undo, const int *undo_eval);
+
+int main()
+{
+    for(int y = 0;y < SIZE;y++)
+        for(int x = 0;x < SIZE;x++)
+            board[y][x].type = empty;
+
+
+    board[7][0].type = board[7][7].type = rook;
+    board[7][4].type = king;
+
+    struct position pos = {4, 7};
+    struct move move = {pos, pos};
+    struct undo taken;
+
+    int undo_eval;
+    print_board();
+    while(piece[board[pos.y][pos.x].type].enum_move(&pos, &move))
+    {
+        piece[board[pos.y][pos.x].type].play_move(&move, &taken, &undo_eval);
+        print_board();
+        undo_move(&move, &taken, &undo_eval);
+        print_board();
+        printf("====================================================================\n\n\n");
+    }
+
+    return 0;
+}*/
