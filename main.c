@@ -32,6 +32,7 @@ void fill_board()
         {
             board[y][x].type = empty;
             board[y][x].has_been_moved = 0;
+            board[y][x].moves_after_promotion = -1;
         }
 
     ///two rook endgame
@@ -271,35 +272,3 @@ int main()
     }
     return 0;
 }
-
-///Test code for new moves
-/*
-void undo_move(struct move *move, struct undo *undo, const int *undo_eval);
-
-int main()
-{
-    for(int y = 0;y < SIZE;y++)
-        for(int x = 0;x < SIZE;x++)
-            board[y][x].type = empty;
-
-
-    board[7][0].type = board[7][7].type = rook;
-    board[7][4].type = king;
-
-    struct position pos = {4, 7};
-    struct move move = {pos, pos};
-    struct undo taken;
-
-    int undo_eval;
-    print_board();
-    while(piece[board[pos.y][pos.x].type].enum_move(&pos, &move))
-    {
-        piece[board[pos.y][pos.x].type].play_move(&move, &taken, &undo_eval);
-        print_board();
-        undo_move(&move, &taken, &undo_eval);
-        print_board();
-        printf("====================================================================\n\n\n");
-    }
-
-    return 0;
-}*/

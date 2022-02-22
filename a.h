@@ -8,6 +8,7 @@ struct square
     enum type type;
     enum color color;
     int has_been_moved;
+    int moves_after_promotion;
 };
 
 struct position
@@ -27,7 +28,7 @@ struct undo
     struct position position;
     enum type taken;
     int has_been_moved;
-
+    int moves_after_promotion;
 };
 
 struct piece

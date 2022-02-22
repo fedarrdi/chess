@@ -1,4 +1,5 @@
 #include "a.h"
+#include<stdio.h>
 
 extern long long global_evaluation;
 extern struct square board[8][8];
@@ -518,6 +519,12 @@ void undo_castle(struct move *move, struct undo *undo)
     }
 }
 
+void undo_promotion(struct move * move)
+{
+    board[move->to.y][move->to.x].type = pawn;
+    board[move->to.y][move->to.x].moves_after_promotion = -1;
+}
+
 void undo_move(struct move *move, struct undo *undo, const int *undo_eval)
 {
     global_evaluation -= *undo_eval;
@@ -529,6 +536,13 @@ void undo_move(struct move *move, struct undo *undo, const int *undo_eval)
     }
 
     struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
+
+    if(to->moves_after_promotion == 0)
+        undo_promotion(move);
+
+    if(to->moves_after_promotion > 0)
+        to->moves_after_promotion--;
+
     *from = *to;
     from->has_been_moved--;
     to->type = undo->taken;
@@ -566,33 +580,61 @@ void castle(struct move *move)
     }
 }
 
-void generic_play_move(struct move *move, struct undo *undo, int *undo_eval)
+void promotion(struct move * move)
 {
+
+    ///find a way how to determin if a person or the ai is playing
+    /*char new_piece;
+    printf("Your pawn reach the end, you can promote\n"
+           "enter\n "
+           "1 for knight\n"
+           "2 for bishop\n"
+           "3 for rook\n"
+           "4 for queen\n");
+
+    scanf("%c", &new_piece);
+    while(new_piece < 0 || new_piece > 5)
+        scanf("%c", &new_piece);*/
+
+    struct square *to = &board[move->to.y][move->to.x];
+    //to->type = new_piece + 1;
+    to->type = queen;
+    to->moves_after_promotion = 0;
+}
+
+void generic_play_move(struct move *move, struct undo *undo, int *undo_eval) {
     struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
 
-    if(from->type == king && mod(move->from.x - move->to.x) == 2)
-    {
+    if (from->type == king && mod(move->from.x - move->to.x) == 2) {
         castle(move);
 
-        int castle_eval = 2;
+        int castle_eval = 200;
 
-        if(from->color == black) castle_eval *= -1;
+        if (from->color == black) castle_eval *= -1;
         *undo_eval = castle_eval;
         global_evaluation += castle_eval;
 
         return;
     }
+    ///when promotion is happening before we undo the move we transform the piece to pawn
 
+    if(from->moves_after_promotion > 0)
+        from->moves_after_promotion++;
 
     undo->position = move->to;
     from->has_been_moved++;
     undo->taken = to->type;
     undo->has_been_moved = to->has_been_moved;
+    undo->moves_after_promotion = to->moves_after_promotion;
     *to = *from;
     from->type = empty;
 
+    if (to->type == pawn && (move->to.y == 7 || move->to.y == 0))
+        promotion(move);
 
-     int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) + /** there will be changes here not every evaluation will be used becouse of the castle move*/
+
+
+    int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) + /** there will be changes here not every evaluation will be used because of the castle move*/
                center_taking(&move->to) + piece[undo->taken].weight(move->to) + space_taking(to->color) +
                piece_early_development(&move->to) + evaluate_king_position_mid_game(&move->to);
 
