@@ -487,7 +487,7 @@ enum bool empty_valid_move(struct move move) { return false; }
 
 enum bool empty_enum_move(struct position *pos, struct move *move) {return false;}
 
-void empty_play_move(struct move *move, struct undo *taken,  int *undo_eval) {  }
+void empty_play_move(struct move *move, struct undo *taken,  int *undo_eval, enum bool is_human) {  }
 
 
 int king_move_position(const struct position *pos);
@@ -580,29 +580,29 @@ void castle(struct move *move)
     }
 }
 
-void promotion(struct move * move)
+void promotion(struct move * move, enum bool is_human)
 {
-
-    ///find a way how to determin if a person or the ai is playing
-    /*char new_piece;
-    printf("Your pawn reach the end, you can promote\n"
-           "enter\n "
-           "1 for knight\n"
-           "2 for bishop\n"
-           "3 for rook\n"
-           "4 for queen\n");
-
-    scanf("%c", &new_piece);
-    while(new_piece < 0 || new_piece > 5)
-        scanf("%c", &new_piece);*/
-
     struct square *to = &board[move->to.y][move->to.x];
-    //to->type = new_piece + 1;
-    to->type = queen;
     to->moves_after_promotion = 0;
+
+    if (is_human)
+    {
+        int new_piece;
+        printf("Your pawn reach the end, you can promote\n" "enter\n " "1 for knight\n" "2 for bishop\n" "3 for rook\n" "4 for queen\n");
+        scanf("%d", &new_piece);
+        while (new_piece < 0 || new_piece > 5)
+            scanf("%d", &new_piece);
+        to->type = new_piece + 1;
+    }
+
+    else
+    {
+        to->type = queen;
+    }
 }
 
-void generic_play_move(struct move *move, struct undo *undo, int *undo_eval) {
+void generic_play_move(struct move *move, struct undo *undo, int *undo_eval, enum bool is_human)
+{
     struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
 
     if (from->type == king && mod(move->from.x - move->to.x) == 2) {
@@ -630,7 +630,7 @@ void generic_play_move(struct move *move, struct undo *undo, int *undo_eval) {
     from->type = empty;
 
     if (to->type == pawn && (move->to.y == 7 || move->to.y == 0))
-        promotion(move);
+        promotion(move, is_human);
 
 
 

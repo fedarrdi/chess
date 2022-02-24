@@ -38,7 +38,7 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
     while(enum_board(player, &curr_move))
     {
         move_cnt++;
-        piece[board[curr_move.from.y][curr_move.from.x].type].play_move(&curr_move, &taken, &undo_eval);
+        piece[board[curr_move.from.y][curr_move.from.x].type].play_move(&curr_move, &taken, &undo_eval, 0);
 
         int curr_eval = global_evaluation;
 
