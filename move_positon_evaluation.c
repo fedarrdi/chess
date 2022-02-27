@@ -1,17 +1,13 @@
 #include "a.h"
-
+#include<math.h>
 extern long long global_evaluation;
+extern struct square board[8][8];
+extern struct piece piece[7];
 extern int move_cnt;
 
 int mod(int a);
 int max(int a, int b){ return (a > b) ? a : b;}
 int min(int a, int b){ return (a < b) ? a : b;}
-int pow(int times, int v)
-{
-    int value = 1;
-    for(int i = 1; i <= times; i++, value *= v);
-    return value;
-}
 
 float game_weight()
 {
@@ -55,7 +51,7 @@ int king_move_position(const struct position *pos)
     return evaluation * endGameWeight;
 }
 
-int evaluate_piece_move(const struct position *pos)
+int evaluate_piece_move(struct position *pos)
 {
     struct move move = {*pos, *pos};
     int danger_squares = 0, defends = 0, king_attack = 0;
@@ -78,10 +74,10 @@ int evaluate_piece_move(const struct position *pos)
     if(board[pos->y][pos->x].type == knight) danger_squares *= 5;
     else if(board[pos->y][pos->x].type == pawn) danger_squares *= 2;
 
-    return 2*(danger_squares + defends + king_attack);
+    return 3*(danger_squares + defends + king_attack);
 }
 
-int evaluate_taking(const struct position *pos, const struct undo *undo)
+int evaluate_taking(struct position *pos, const struct undo *undo)
 {
     struct square *from = &board[pos->y][pos->x];
 
@@ -128,17 +124,13 @@ int space_taking(enum color player)
 ///develop piece in the start of the game
 int piece_early_development(const struct position *pos)
 {
-    if (move_cnt <= 22 || board[pos->y][pos->x].type == pawn)
-        return 0;
+    if (move_cnt <= 22 || board[pos->y][pos->x].type == pawn) return 0;
 
-    if (move_cnt < 12 && board[pos->y][pos->x].type > pawn && board[pos->y][pos->x].type < queen)
-        return 100;
+    if (move_cnt < 12 && board[pos->y][pos->x].type > pawn && board[pos->y][pos->x].type < queen) return 100;
 
-    if (move_cnt > 12 && move_cnt < 22 && board[pos->y][pos->x].type == queen)
-        return 15;
+    if (move_cnt > 12 && move_cnt < 22 && board[pos->y][pos->x].type == queen) return 15;
 
-    if (move_cnt < 12 && board[pos->y][pos->x].type == queen)
-        return -200;
+    if (move_cnt < 12 && board[pos->y][pos->x].type == queen) return -200;
 }
 
 int evaluate_king_position_mid_game(struct position *pos)

@@ -1,5 +1,8 @@
 #include "a.h"
+
 extern long long global_evaluation;
+extern struct square board[8][8];
+extern struct piece piece[7];
 extern int move_cnt;
 
 void undo_move(struct move *move, struct undo *undo, const int *undo_eval);
@@ -35,7 +38,7 @@ enum bool find_best_move(struct move *move, int *out_eval, enum color player, in
     while(enum_board(player, &curr_move))
     {
         move_cnt++;
-        piece[board[curr_move.from.y][curr_move.from.x].type].play_move(&curr_move, &taken, &undo_eval);
+        piece[board[curr_move.from.y][curr_move.from.x].type].play_move(&curr_move, &taken, &undo_eval, 0);
 
         int curr_eval = global_evaluation;
 

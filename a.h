@@ -1,12 +1,15 @@
 #define SIZE 8
 enum type { empty, pawn, knight, bishop, rook, queen, king };
 enum color { black, white };
+enum bool { false, true };
 
 struct square
 {
     enum type type;
     enum color color;
-} board[8][8];
+    int has_been_moved;
+    int moves_after_promotion;
+};
 
 struct position
 {
@@ -18,20 +21,21 @@ struct move
     struct position from, to;
 };
 
-enum bool { false, true };
-
 typedef unsigned weight;
 
 struct undo
 {
-    struct position position;
     enum type taken;
+    int has_been_moved;
+    int moves_after_promotion;
 };
 
 struct piece
 {
     weight (*weight)(struct position pos);
-    enum bool (*valid_move)(struct move move);
-    void(*play_move)(struct move *move, struct undo *taken, int *undo_move);
+    enum bool (*valid_move)(struct move move);              /// undo_eval better name
+    void(*play_move)(struct move *move, struct undo *taken, int *undo_move, enum bool is_human);
     enum bool (*enum_move)(struct position *pos, struct move *move); // pos!=0 for the first move
-} piece[7];
+};
+
+

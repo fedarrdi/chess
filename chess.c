@@ -1,5 +1,9 @@
 #include "a.h"
+#include<stdio.h>
+
 extern long long global_evaluation;
+extern struct square board[8][8];
+extern struct piece piece[7];
 
 int mod(int a){return (a < 0) ? -a : a;}
 
@@ -89,8 +93,8 @@ weight rook_weight(struct position pos) { return 500; }
 enum bool rook_valid_move(struct move move)
 {
     enum bool a = (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
-            (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) &&
-            (move.to.x == move.from.x || move.to.y == move.from.y));
+                   (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) &&
+                   (move.to.x == move.from.x || move.to.y == move.from.y));
 
     int c = (move.to.x - move.from.x < 0) ? -1 : 1;
     int d = (move.to.y - move.from.y < 0) ? -1 : 1;
@@ -156,8 +160,8 @@ weight bishop_wight(struct position pos) { return 300; }
 enum bool bishop_valid_move(struct move move)
 {
     enum bool a = (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
-            (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)
-            && move.to.x != move.from.x && move.to.y != move.from.y && mod(move.to.x - move.from.x) == mod(move.to.y - move.from.y));
+                   (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)
+                   && move.to.x != move.from.x && move.to.y != move.from.y && mod(move.to.x - move.from.x) == mod(move.to.y - move.from.y));
 
     int c = (move.to.x - move.from.x < 0) ? -1 : 1;
     int d = (move.to.y - move.from.y < 0) ? -1 : 1;
@@ -315,10 +319,10 @@ enum bool pawn_valid_move(struct move move)
     short s = (board[move.from.y][move.from.x].color == black) ? 1 : 6;
 
     return (move.to.x >= 0 && move.to.x < SIZE && move.to.y >= 0 && move.to.y < SIZE &&
-    (((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x && board[move.to.y][move.to.x].type == empty)  ||
-    ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x + 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
-    ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x - 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)||
-    ((move.to.y - move.from.y)*t == 2 && move.from.x == move.to.x && board[move.to.y - t][move.to.x].type == empty && board[move.to.y][move.to.x].type == empty && move.from.y == s))) ;
+            (((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x && board[move.to.y][move.to.x].type == empty)  ||
+             ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x + 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color) ||
+             ((move.to.y - move.from.y)*t == 1 && move.from.x == move.to.x - 1 && board[move.to.y][move.to.x].type != empty && board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color)||
+             ((move.to.y - move.from.y)*t == 2 && move.from.x == move.to.x && board[move.to.y - t][move.to.x].type == empty && board[move.to.y][move.to.x].type == empty && move.from.y == s))) ;
 }
 
 enum bool pawn_enum_move(struct position* pos, struct move* move)
@@ -362,6 +366,29 @@ weight king_weight(struct position pos) { return 1e7; }
 
 enum bool king_valid_move(struct move move)
 {
+    if(mod(move.from.x - move.to.x) == 2 && !board[move.from.y][move.from.x].has_been_moved && (!board[move.from.y][0].has_been_moved || !board[move.from.y][7].has_been_moved))
+    {
+        if(move.to.x - move.from.x == 2)
+        {
+            for(int s_x = move.from.x + 1;s_x < SIZE - 1;s_x++)
+                if(board[move.from.y][s_x].type != empty)
+                    return false;
+
+            return true;
+        }
+
+        if(move.to.x - move.from.x == -2)
+        {
+            for(int s_x = move.from.x - 1;s_x >= 1;s_x--)
+                if(board[move.from.y][s_x].type != empty)
+                    return false;
+
+            return true;
+        }
+
+        return false;
+    }
+
     return (mod(move.to.x - move.from.x) < 2 && mod(move.to.y - move.from.y) < 2 && move.to.x >= 0 &&move.to.x < SIZE && move.to.y >= 0 &&
             move.to.y < SIZE && (board[move.to.y][move.to.x].type == empty || board[move.to.y][move.to.x].color != board[move.from.y][move.from.x].color));
 }
@@ -434,6 +461,23 @@ enum bool king_enum_move(struct position *pos, struct move* move)
         d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
     }
 
+    move->to.x = pos->x - 2;
+    move->to.y = pos->y;
+    if(d.y == 1 && d.x == 1)
+    {
+        if(king_valid_move(*move)) return true;
+        d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
+    }
+
+
+    move->to.x = pos->x + 2;
+    move->to.y = pos->y;
+    if(!d.y && d.x == 2)
+    {
+        if(king_valid_move(*move)) return true;
+        d.y = pos->y - move->to.y, d.x = pos->x - move->to.x;
+    }
+
     return false;
 }
 
@@ -443,7 +487,7 @@ enum bool empty_valid_move(struct move move) { return false; }
 
 enum bool empty_enum_move(struct position *pos, struct move *move) {return false;}
 
-void empty_play_move(struct move *move, struct undo *taken,  int *undo_eval) {  }
+void empty_play_move(struct move *move, struct undo *taken,  int *undo_eval, enum bool is_human) {  }
 
 
 int king_move_position(const struct position *pos);
@@ -454,31 +498,160 @@ int space_taking(enum color player);
 int piece_early_development(const struct position *pos);
 int evaluate_king_position_mid_game(struct position *pos);
 
+void undo_castle(struct move *move, struct undo *undo)
+{
+    if(move->from.x - move->to.x > 0)
+    {
+        struct square *king = &board[move->from.y][2], *rook = &board[move->from.y][3];
+        king->has_been_moved = rook->has_been_moved = 0;
+        board[move->from.y][0] = *rook;
+        board[move->from.y][4] = *king;
+        king->type = rook->type = empty;
+    }
 
+    else
+    {
+        struct square *king = &board[move->from.y][6], *rook = &board[move->from.y][5];
+        king->has_been_moved = rook->has_been_moved = 0;
+        board[move->from.y][7] = *rook;
+        board[move->from.y][4] = *king;
+        king->type = rook->type = empty;
+    }
+}
+
+void undo_promotion(struct move * move)
+{
+    board[move->to.y][move->to.x].type = pawn;
+    board[move->to.y][move->to.x].moves_after_promotion = -1;
+}
 
 void undo_move(struct move *move, struct undo *undo, const int *undo_eval)
 {
-    struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
     global_evaluation -= *undo_eval;
+
+    if(mod(move->from.x - move->to.x) == 2 && board[move->to.y][move->to.x].type == king)
+    {
+        undo_castle(move, undo);
+        return;
+    }
+
+    struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
+
+    if(to->moves_after_promotion == 0)
+        undo_promotion(move);
+
+    if(to->moves_after_promotion > 0)
+        to->moves_after_promotion--;
+
     *from = *to;
+    from->has_been_moved--;
+
     to->type = undo->taken;
     to->color = !from->color;
+    to->has_been_moved = undo->has_been_moved;
+    to->moves_after_promotion = undo->moves_after_promotion;
 }
 
-void generic_play_move(struct move *move, struct undo *undo, int *undo_eval)
+void castle(struct move *move)
 {
-    undo->position = move->to;
+    struct square *from = &board[move->from.y][move->from.x];
+    from->has_been_moved++;
+    if(move->from.x - move->to.x > 0)
+    {
+        board[move->from.y][2] = *from;
+        from->type = empty;
+        from->has_been_moved = 0;
+
+        struct square *r_from = &board[move->from.y][0];
+        r_from->has_been_moved++;
+        board[move->from.y][3] = *r_from;
+        r_from->type = empty;
+        r_from->has_been_moved = 0;
+    }
+    else
+    {
+        board[move->from.y][6] = *from;
+        from->type = empty;
+        from->has_been_moved = 0;
+
+        struct square *r_from = &board[move->from.y][7];
+        r_from->has_been_moved++;
+        board[move->from.y][5] = *r_from;
+        r_from->type = empty;
+        r_from->has_been_moved = 0;
+    }
+}
+
+void promotion(struct move * move, enum bool is_human)
+{
+    struct square *to = &board[move->to.y][move->to.x];
+    to->moves_after_promotion = 0;
+
+    if (is_human)
+    {
+        int new_piece;
+        printf("Your pawn reach the end, you can promote\n" "enter\n " "1 for knight\n" "2 for bishop\n" "3 for rook\n" "4 for queen\n");
+        scanf("%d", &new_piece);
+        while (new_piece < 0 || new_piece > 5)
+            scanf("%d", &new_piece);
+        to->type = new_piece + 1;
+    }
+
+    else
+    {
+        to->type = queen;
+    }
+}
+
+void generic_play_move(struct move *move, struct undo *undo, int *undo_eval, enum bool is_human)
+{
     struct square *from = &board[move->from.y][move->from.x], *to = &board[move->to.y][move->to.x];
+
+    if (from->type == king && mod(move->from.x - move->to.x) == 2)
+    {
+        castle(move);
+
+        int castle_eval = 200;
+
+        if (from->color == black) castle_eval *= -1;
+
+        *undo_eval = castle_eval;
+        global_evaluation += castle_eval;
+
+        return;
+    }
+
+    if(from->moves_after_promotion >= 0)
+        from->moves_after_promotion++;
+
+    from->has_been_moved++;
+
     undo->taken = to->type;
+    undo->has_been_moved = to->has_been_moved;
+    undo->moves_after_promotion = to->moves_after_promotion;
+
     *to = *from;
+
     from->type = empty;
-    int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) + center_taking(&move->to) + piece[undo->taken].weight(move->to) + space_taking(to->color) + piece_early_development(&move->to) + evaluate_king_position_mid_game(&move->to);
+    from->has_been_moved = 0;
+    from->moves_after_promotion = -1;
+
+    if (to->type == pawn && (move->to.y == 7 || move->to.y == 0))
+        promotion(move, is_human);
+
+
+    int eval = king_move_position(&move->to) + evaluate_piece_move(&move->to) + evaluate_taking(&move->to, undo) +
+               center_taking(&move->to) + piece[undo->taken].weight(move->to) + space_taking(to->color) +
+               piece_early_development(&move->to) + evaluate_king_position_mid_game(&move->to);
+
+
     if(to->color == black) eval *= -1;
+
     *undo_eval = eval;
     global_evaluation += eval;
 }
 
-struct piece piece[]=
+struct piece piece[] =
         {
                 { empty_weight, empty_valid_move, empty_play_move, empty_enum_move },
                 { pawn_weight, pawn_valid_move, generic_play_move, pawn_enum_move },
