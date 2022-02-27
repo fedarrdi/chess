@@ -50,8 +50,9 @@ void fill_board()
     board[6][1].type = rook;
     board[6][1].color = white;*/
 
-    /*for(int x = 0;x < SIZE;x++)
+    for(int x = 0;x < SIZE;x++)
         board[1][x].type = board[6][x].type = pawn, board[1][x].color = black, board[6][x].color = white;
+
     board[0][3].type =  board[7][3].type =  queen;
     board[0][3].color = black;
     board[7][3].color = white;
@@ -66,10 +67,7 @@ void fill_board()
     board[7][1].color = board[7][6].color = white;
     board[0][0].type = board[0][7].type = board[7][0].type = board[7][7].type = rook;
     board[0][0].color = board[0][7].color = black;
-    board[7][0].color = board[7][7].color = white;*/
-
-    board[1][6].type = board[1][7].type = pawn;
-    board[1][7].color = white;
+    board[7][0].color = board[7][7].color = white;
 }
 
 void print_board()
@@ -199,10 +197,10 @@ int main()
 
     mode_try:;
 
-    printf("Enter mode: \n 1 for bot vs you \n 2 for bot vs bot \n");
+    printf("Enter mode: \n 1 for bot vs you \n 2 for bot vs bot \n 3 for you and your friend \n");
     scanf("%d", &mode);
 
-    if(mode != 1 && mode != 2)
+    if(mode != 1 && mode != 2 && mode != 3)
     {
         printf("Invalid mode, please choose again!\n");
         goto mode_try;
@@ -273,5 +271,31 @@ int main()
             timeout(2);
         }
     }
+    if(mode == 3)
+    {
+        while(1)
+        {
+            if (global_evaluation >= 1e6)
+            {
+                printf("White wins!!!\n");
+                break;
+            }
+
+            if (global_evaluation <= -1e6)
+            {
+                printf("Black wins!!!\n");
+                break;
+            }
+
+            printf(turn ? "White\n" : "Black\n");
+            print_board();
+
+            move_piece(turn);
+
+            move_cnt++;
+            turn = !turn;
+        }
+    }
+
     return 0;
 }
